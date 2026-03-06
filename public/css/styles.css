@@ -1,0 +1,106 @@
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI, sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#e5e7eb,#cbd5e1);
+}
+
+
+
+.login-container{
+width:100%;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+
+
+.login-card{
+
+background:white;
+padding:40px;
+border-radius:12px;
+width:350px;
+box-shadow:0 8px 25px rgba(0,0,0,0.15);
+text-align:center;
+
+}
+
+
+
+.login-card h1{
+
+margin-bottom:10px;
+color:#1f2937;
+
+}
+
+.subtitle{
+
+margin-bottom:30px;
+color:#6b7280;
+
+}
+
+
+
+.login-card input{
+
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border-radius:6px;
+border:1px solid #d1d5db;
+font-size:14px;
+transition:0.3s;
+
+}
+
+.login-card input:focus{
+
+outline:none;
+border-color:#ea580c;
+box-shadow:0 0 5px rgba(234,88,12,0.25);
+
+}
+
+
+
+.login-card button{
+
+width:100%;
+padding:12px;
+background:#ea580c;
+border:none;
+color:white;
+font-size:16px;
+border-radius:6px;
+cursor:pointer;
+transition:0.3s;
+
+}
+
+.login-card button:hover{
+
+background:#c2410c;
+
+}
+
+
+
+#mensaje{
+
+margin-top:15px;
+color:#dc2626;
+font-size:14px;
+
+}
