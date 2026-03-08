@@ -2,17 +2,18 @@ version: "3.9"
 
 services:
 
-  database:
-    image: postgres:15
-    container_name: foodies_db
+  postgres:
+    image: postgres:17
+    container_name: tsj_postgres
     restart: always
     environment:
-      POSTGRES_USER: foodies
-      POSTGRES_PASSWORD: foodies123
-      POSTGRES_DB: foodiesdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: tsj_foodies
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres_data:/var/lib/postgresql/data
 
   backend:
@@ -22,9 +23,9 @@ services:
     ports:
       - "5000:5000"
     environment:
-      DATABASE_URL: postgres://foodies:foodies123@database:5432/foodiesdb
+      DATABASE_URL: postgres://postgres:123456@postgres:5432/tsj_foodies
     depends_on:
-      - database
+      - postgres
 
   frontend:
     build: ./frontend
