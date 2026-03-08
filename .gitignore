@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# logs
+logs
+*.log
+npm-debug.log*
+
+# env files
+.env
+.env.local
+
+# docker
+postgres_data
+
+# build
+dist
+build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# vscode
+.vscode
+
+# cache
+.cache

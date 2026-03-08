@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+
+  database:
+    image: postgres:15
+    container_name: foodies_db
+    restart: always
+    environment:
+      POSTGRES_USER: foodies
+      POSTGRES_PASSWORD: foodies123
+      POSTGRES_DB: foodiesdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: foodies_backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgres://foodies:foodies123@database:5432/foodiesdb
+    depends_on:
+      - database
+
+  frontend:
+    build: ./frontend
+    container_name: foodies_frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host
+
+volumes:
+  postgres_data:
