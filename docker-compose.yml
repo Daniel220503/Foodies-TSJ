@@ -32,13 +32,9 @@ services:
     container_name: foodies_frontend
     restart: always
     ports:
-      - "5173:5173"
+      - "8080:80"
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    command: npm run dev -- --host
 
 volumes:
   postgres_data:
