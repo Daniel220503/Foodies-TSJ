@@ -71,14 +71,6 @@ CREATE TABLE horarios_restaurante (
         CHECK (hora_cierre > hora_apertura)
 );
 
-CREATE TABLE categorias (
-    id_categoria SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    descripcion TEXT,
-    icono VARCHAR(255),
-    activa BOOLEAN NOT NULL DEFAULT TRUE
-);
-
 CREATE TABLE menu_items (
     id_item SERIAL PRIMARY KEY,
     id_restaurante INT NOT NULL,
