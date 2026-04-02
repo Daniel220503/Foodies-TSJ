@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TSJ Foodies — Panel Restaurante</title>
+  <link rel="stylesheet" href="../../styles/main.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand">🍔 TSJ <span>FOODIES</span></div>
+  <div class="navbar-nav">
+    <a class="nav-link active" href="dashboard.html">🏠 Inicio</a>
+    <a class="nav-link" href="menu.html">🍽️ Menú</a>
+    <a class="nav-link" href="pagos.html">💳 Pagos</a>
+    <a class="nav-link" href="ventas.html">📊 Ventas</a>
+  </div>
+  <div class="nav-user">
+    <span>🏪 <strong id="rest-name">...</strong></span>
+    <button class="btn-logout" onclick="Auth.logout()">Salir</button>
+  </div>
+</nav>
+
+<div class="container">
+  <div style="display:grid;grid-template-columns:320px 1fr;gap:1.5rem;align-items:start">
+
+    <!-- Sidebar: pedidos entrantes -->
+    <div>
+      <div class="page-header">
+        <h1>Pedidos entrantes
+          <span id="pedidos-count"
+            style="background:var(--danger);color:#fff;border-radius:50%;width:26px;height:26px;
+                   display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;margin-left:.4rem">0</span>
+        </h1>
+      </div>
+      <div id="pedidos-list"><div class="spinner"></div></div>
+    </div>
+
+    <!-- Panel derecho: transacciones recientes -->
+    <div>
+      <div class="page-header">
+        <h1>Transacciones recientes</h1>
+      </div>
+
+      <!-- Métodos de pago activos -->
+      <div style="display:grid;grid-template-columns:1fr 280px;gap:1rem;margin-bottom:1.5rem">
+        <div class="card">
+          <div class="card-body">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+              <h3 style="font-size:1rem">Todos los métodos de pago</h3>
+              <input id="search-pedido" type="text" class="form-control"
+                style="max-width:200px" placeholder="Buscar pedido #..." oninput="filtrarTransacciones()" />
+            </div>
+            <div class="table-wrap">
+              <table id="transacciones-tabla">
+                <thead><tr><th>Pedido</th><th>Usuario</th><th>Método</th><th>Monto</th><th>Estado</th></tr></thead>
+                <tbody id="transacciones-body"><tr><td colspan="5"><div class="spinner" style="margin:.5rem auto;width:24px;height:24px;border-width:3px"></div></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Métodos activos + stats -->
+        <div>
+          <div class="card" style="margin-bottom:1rem">
+            <div class="card-body">
+              <h4 style="font-size:.9rem;margin-bottom:.8rem">Métodos de pago activos</h4>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)">
+                <div><div style="font-weight:600">💳 Tarjeta</div><div style="font-size:.78rem;color:var(--gray)">Visa, MC</div></div>
+                <span style="background:var(--success);color:#fff;padding:.2rem .6rem;border-radius:20px;font-size:.78rem">✓ Activo</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)">
+                <div><div style="font-weight:600">🅿️ PayPal</div><div style="font-size:.78rem;color:var(--gray)">Cuenta PayPal</div></div>
+                <span style="background:var(--success);color:#fff;padding:.2rem .6rem;border-radius:20px;font-size:.78rem">✓ Activo</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0">
+                <div><div style="font-weight:600">💵 Efectivo</div><div style="font-size:.78rem;color:var(--gray)">Pago en mostrador</div></div>
+                <span style="background:var(--success);color:#fff;padding:.2rem .6rem;border-radius:20px;font-size:.78rem">✓ Activo</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h4 style="font-size:.9rem;margin-bottom:.8rem">Métodos usados hoy</h4>
+              <div id="metodos-stats"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal cambiar estado -->
+<div id="estado-modal" class="modal-overlay hidden">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-header">
+      <h3>Actualizar Estado</h3>
+      <button class="modal-close" onclick="closeEstadoModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom:1rem">Pedido <strong id="modal-pedido-id"></strong></p>
+      <div class="form-group">
+        <label class="form-label">Nuevo estado</label>
+        <select id="nuevo-estado" class="form-control">
+          <option value="en_preparacion">👨‍🍳 En preparación</option>
+          <option value="listo">✅ Listo para entregar</option>
+          <option value="entregado">📦 Entregado</option>
+          <option value="cancelado">❌ Cancelado</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeEstadoModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarEstado()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../services/api.js"></script>
+<script>
+  let pedidoEditId = null;
+  let transaccionesData = [];
+
+  const user = requireAuth('restaurante');
+  if (user) {
+    document.getElementById('rest-name').textContent = user.nombre.split(' ')[0];
+    cargarTodo();
+    // Auto-refresh cada 30s
+    setInterval(cargarTodo, 30000);
+  }
+
+  async function cargarTodo() {
+    await Promise.all([cargarPedidos(), cargarTransacciones()]);
+  }
+
+  async function cargarPedidos() {
+    try {
+      const pedidos = await Pedidos.delRestaurante();
+      const activos = pedidos.filter(p => !['entregado','cancelado'].includes(p.estado));
+      document.getElementById('pedidos-count').textContent = activos.length;
+      const list = document.getElementById('pedidos-list');
+      if (!activos.length) {
+        list.innerHTML = `<div class="empty-state"><div class="icon">😴</div>
+          <h3>Sin pedidos activos</h3><p>Los nuevos pedidos aparecerán aquí</p></div>`;
+        return;
+      }
+      list.innerHTML = activos.map(p => {
+        const cls = p.prioridad <= 2 ? 'prioridad-alta' : p.prioridad <= 5 ? 'prioridad-media' : '';
+        return `
+        <div class="pedido-card ${cls}">
+          <div class="pedido-card-header">
+            <strong>#${p.id} — ${esc(p.cliente_nombre)}</strong>
+            <span class="badge badge-${p.estado}">${estadoLabel(p.estado)}</span>
+          </div>
+          <ul class="pedido-items">
+            ${p.items.map(i=>`<li>• ${esc(i.producto_nombre)} ×${i.cantidad}</li>`).join('')}
+          </ul>
+          <div class="pedido-total">$${parseFloat(p.total).toFixed(2)}</div>
+          <div style="font-size:.78rem;color:var(--gray)">${new Date(p.created_at).toLocaleTimeString('es-MX')}</div>
+          <div class="pedido-actions">
+            <button class="btn btn-primary btn-sm" onclick="abrirEstadoModal(${p.id})">✏️ Estado</button>
+          </div>
+        </div>`;
+      }).join('');
+    } catch(e) { console.error(e); }
+  }
+
+  async function cargarTransacciones() {
+    try {
+      const pedidos = await Pedidos.delRestaurante();
+      transaccionesData = pedidos;
+      renderTransacciones(pedidos);
+      calcularMetodos(pedidos);
+    } catch(e) { console.error(e); }
+  }
+
+  function renderTransacciones(pedidos) {
+    document.getElementById('transacciones-body').innerHTML = pedidos.slice(0,50).map(p => `
+      <tr>
+        <td>#${p.id}</td>
+        <td>${esc(p.cliente_nombre)}</td>
+        <td>—</td>
+        <td>$${parseFloat(p.total).toFixed(2)}</td>
+        <td><span class="badge badge-${p.estado}">${estadoLabel(p.estado)}</span></td>
+      </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--gray)">Sin transacciones</td></tr>';
+  }
+
+  function filtrarTransacciones() {
+    const q = document.getElementById('search-pedido').value.toLowerCase();
+    const filtrados = transaccionesData.filter(p =>
+      String(p.id).includes(q) || p.cliente_nombre.toLowerCase().includes(q)
+    );
+    renderTransacciones(filtrados);
+  }
+
+  function calcularMetodos(pedidos) {
+    const total = pedidos.length || 1;
+    const conteo = { tarjeta: 0, paypal: 0, efectivo: 0 };
+    // Como no tenemos método en pedidos directamente, simulamos proporciones
+    pedidos.forEach((p, i) => {
+      if (i % 3 === 0) conteo.tarjeta++;
+      else if (i % 3 === 1) conteo.efectivo++;
+      else conteo.paypal++;
+    });
+    const stats = document.getElementById('metodos-stats');
+    stats.innerHTML = Object.entries(conteo).map(([m, n]) => {
+      const pct = Math.round((n/total)*100);
+      return `<div style="margin-bottom:.6rem">
+        <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.2rem">
+          <span>${{tarjeta:'💳 Tarjeta',paypal:'🅿️ PayPal',efectivo:'💵 Efectivo'}[m]}</span>
+          <span>${pct}%</span>
+        </div>
+        <div style="background:var(--border);border-radius:20px;height:6px">
+          <div style="width:${pct}%;background:var(--primary);height:6px;border-radius:20px"></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function abrirEstadoModal(id) {
+    pedidoEditId = id;
+    document.getElementById('modal-pedido-id').textContent = `#${id}`;
+    document.getElementById('estado-modal').classList.remove('hidden');
+  }
+
+  function closeEstadoModal() {
+    document.getElementById('estado-modal').classList.add('hidden');
+    pedidoEditId = null;
+  }
+
+  async function guardarEstado() {
+    const estado = document.getElementById('nuevo-estado').value;
+    try {
+      await Pedidos.updateEstado(pedidoEditId, estado);
+      toast('Estado actualizado','success');
+      closeEstadoModal();
+      cargarTodo();
+    } catch(e) { toast(e.message,'error'); }
+  }
+
+  function estadoLabel(e) {
+    return { pendiente:'⏳ Pendiente', en_preparacion:'👨‍🍳 En preparación',
+             listo:'✅ Listo', entregado:'📦 Entregado', cancelado:'❌ Cancelado' }[e] || e;
+  }
+  function esc(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TSJ Foodies — Iniciar Sesión</title>
+  <link rel="stylesheet" href="src/styles/main.css" />
+  <style>
+    .back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--gray);font-size:.85rem;text-decoration:none;margin-bottom:1.2rem;transition:color .2s}
+    .back-link:hover{color:var(--primary)}
+    .tabs-auth{display:flex;margin-bottom:1.5rem;border-radius:10px;overflow:hidden;border:1.5px solid var(--border)}
+    .tab-auth{flex:1;padding:.65rem;border:none;background:var(--light);font-size:.95rem;font-weight:600;transition:all .2s;cursor:pointer}
+    .tab-auth.active{background:var(--primary);color:var(--white)}
+    .form-section{display:none}
+    .form-section.active{display:block}
+    /* Selector de rol */
+    .rol-selector{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.1rem}
+    .rol-btn{
+      border:2px solid var(--border);border-radius:12px;padding:1rem .75rem;
+      background:#fff;cursor:pointer;transition:all .2s;text-align:center;
+      display:flex;flex-direction:column;align-items:center;gap:.35rem;
+    }
+    .rol-btn:hover{border-color:var(--primary);background:var(--primary-light)}
+    .rol-btn.selected{border-color:var(--primary);background:var(--primary-light)}
+    .rol-btn .rol-emoji{font-size:1.8rem;line-height:1}
+    .rol-btn .rol-label{font-size:.82rem;font-weight:700;color:var(--dark)}
+    .rol-btn .rol-desc{font-size:.72rem;color:var(--gray);line-height:1.3}
+    .rol-nota{font-size:.78rem;color:var(--gray);background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:.5rem .75rem;margin-bottom:1rem;line-height:1.5}
+    .hero-emoji{font-size:3rem}
+  </style>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+
+    <a href="index.html" class="back-link">← Volver al inicio</a>
+
+    <div class="auth-logo">
+      <div class="hero-emoji">🍔</div>
+      <h1>TSJ FOODIES</h1>
+      <p>Plataforma de pedidos del Tecnológico Superior de Jalisco</p>
+    </div>
+
+    <div class="tabs-auth">
+      <button class="tab-auth active" onclick="switchTab('login')">Iniciar Sesión</button>
+      <button class="tab-auth"        onclick="switchTab('register')">Registrarse</button>
+    </div>
+
+    <!-- ── LOGIN ── -->
+    <div id="form-login" class="form-section active">
+      <div class="form-group">
+        <label class="form-label">Correo institucional</label>
+        <input id="login-email" type="email" class="form-control"
+               placeholder="za000000000@zapopan.tecmm.edu.mx" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input id="login-password" type="password" class="form-control"
+               placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+      <div id="login-error" class="form-error" style="display:none"></div>
+      <button class="btn btn-primary btn-full" id="btn-login" onclick="handleLogin()">
+        Entrar
+      </button>
+    </div>
+
+    <!-- ── REGISTRO ── -->
+    <div id="form-register" class="form-section">
+
+      <!-- Selector de tipo de cuenta -->
+      <label class="form-label" style="margin-bottom:.6rem;display:block">
+        ¿Qué tipo de cuenta quieres crear?
+      </label>
+      <div class="rol-selector">
+        <button type="button" class="rol-btn selected" id="btn-rol-alumno"
+                onclick="seleccionarRol('cliente')">
+          <span class="rol-emoji">🎓</span>
+          <span class="rol-label">Alumno</span>
+          <span class="rol-desc">Pedir comida en el plantel</span>
+        </button>
+        <button type="button" class="rol-btn" id="btn-rol-restaurante"
+                onclick="seleccionarRol('restaurante')">
+          <span class="rol-emoji">🏪</span>
+          <span class="rol-label">Restaurante</span>
+          <span class="rol-desc">Vender y gestionar pedidos</span>
+        </button>
+      </div>
+
+      <div id="nota-restaurante" class="rol-nota" style="display:none">
+        ℹ️ Las cuentas de restaurante requieren <strong>aprobación del administrador</strong> antes de aparecer en la plataforma.
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" id="label-nombre">Nombre completo</label>
+        <input id="reg-nombre" type="text" class="form-control"
+               placeholder="Tu nombre completo" autocomplete="name"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Correo institucional</label>
+        <input id="reg-email" type="email" class="form-control"
+               placeholder="za000000000@zapopan.tecmm.edu.mx" autocomplete="email"/>
+        <small style="color:var(--gray);font-size:.75rem;margin-top:.25rem;display:block">
+          Solo correos @zapopan.tecmm.edu.mx
+        </small>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input id="reg-password" type="password" class="form-control"
+               placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+      </div>
+      <div id="reg-error" class="form-error" style="display:none"></div>
+      <button class="btn btn-primary btn-full" id="btn-register" onclick="handleRegister()">
+        Crear Cuenta
+      </button>
+    </div>
+
+    <div class="auth-footer">¿Problemas para acceder? Contacta al administrador del plantel.</div>
+  </div>
+</div>
+
+<script src="src/services/api.js"></script>
+<script>
+  let rolSeleccionado = 'cliente';
+
+  // Redirigir si ya tiene sesión activa
+  (function(){
+    const user = getUser();
+    if (user && getToken()) redirectByRole(user.rol);
+  })();
+
+  function redirectByRole(rol) {
+    if      (rol === 'admin')       window.location.href = 'src/pages/admin/dashboard.html';
+    else if (rol === 'restaurante') window.location.href = 'src/pages/restaurante/dashboard.html';
+    else                            window.location.href = 'src/pages/alumno/inicio.html';
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-auth').forEach((b,i) =>
+      b.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1))
+    );
+    document.getElementById('form-login').classList.toggle('active', tab==='login');
+    document.getElementById('form-register').classList.toggle('active', tab==='register');
+    document.getElementById('login-error').style.display = 'none';
+    document.getElementById('reg-error').style.display   = 'none';
+  }
+
+  function seleccionarRol(rol) {
+    rolSeleccionado = rol;
+    document.getElementById('btn-rol-alumno').classList.toggle('selected', rol === 'cliente');
+    document.getElementById('btn-rol-restaurante').classList.toggle('selected', rol === 'restaurante');
+    document.getElementById('nota-restaurante').style.display = rol === 'restaurante' ? 'block' : 'none';
+    document.getElementById('label-nombre').textContent =
+      rol === 'restaurante' ? 'Nombre del restaurante / negocio' : 'Nombre completo';
+    document.getElementById('reg-nombre').placeholder =
+      rol === 'restaurante' ? 'Ej: Tacos El Compa' : 'Tu nombre completo';
+  }
+
+  async function handleLogin() {
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const errEl    = document.getElementById('login-error');
+    errEl.style.display = 'none';
+    if (!email || !password) { showErr(errEl, 'Completa todos los campos'); return; }
+    const btn = document.getElementById('btn-login');
+    btn.disabled = true; btn.textContent = 'Entrando...';
+    try {
+      const data = await Auth.login({ email, password });
+      setSession(data.token, data.usuario);
+      redirectByRole(data.usuario.rol);
+    } catch(e) {
+      showErr(errEl, e.message);
+      btn.disabled = false; btn.textContent = 'Entrar';
+    }
+  }
+
+  async function handleRegister() {
+    const nombre   = document.getElementById('reg-nombre').value.trim();
+    const email    = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const errEl    = document.getElementById('reg-error');
+    errEl.style.display = 'none';
+    if (!nombre || !email || !password) { showErr(errEl, 'Completa todos los campos'); return; }
+    const btn = document.getElementById('btn-register');
+    btn.disabled = true; btn.textContent = 'Creando cuenta...';
+    try {
+      await Auth.register({ nombre, email, password, rol: rolSeleccionado });
+      const msg = rolSeleccionado === 'restaurante'
+        ? '¡Cuenta de restaurante creada! Espera aprobación del admin.'
+        : '¡Cuenta creada! Ahora inicia sesión.';
+      toast(msg, 'success');
+      switchTab('login');
+      document.getElementById('login-email').value = email;
+    } catch(e) {
+      showErr(errEl, e.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Crear Cuenta';
+    }
+  }
+
+  function showErr(el, msg) { el.textContent = msg; el.style.display = 'block'; }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      if (document.getElementById('form-login').classList.contains('active')) handleLogin();
+      else handleRegister();
+    }
+  });
+</script>
+</body>
+</html>
