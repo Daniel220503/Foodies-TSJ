@@ -1,0 +1,1 @@
+DELETE FROM restaurantes WHERE nombre = 'Los gordos';

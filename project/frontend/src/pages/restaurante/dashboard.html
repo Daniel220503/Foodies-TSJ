@@ -9,15 +9,15 @@
 <body>
 
 <nav class="navbar">
-  <div class="navbar-brand">🍔 TSJ <span>FOODIES</span></div>
+  <div class="navbar-brand">TSJ <span>FOODIES</span></div>
   <div class="navbar-nav">
-    <a class="nav-link active" href="dashboard.html">🏠 Inicio</a>
-    <a class="nav-link" href="menu.html">🍽️ Menú</a>
-    <a class="nav-link" href="pagos.html">💳 Pagos</a>
-    <a class="nav-link" href="ventas.html">📊 Ventas</a>
+    <a class="nav-link active" href="dashboard.html">Inicio</a>
+    <a class="nav-link" href="menu.html">Menú</a>
+    <a class="nav-link" href="pagos.html">Pagos</a>
+    <a class="nav-link" href="ventas.html">Ventas</a>
   </div>
   <div class="nav-user">
-    <span>🏪 <strong id="rest-name">...</strong></span>
+    <span> <strong id="rest-name">...</strong></span>
     <button class="btn-logout" onclick="Auth.logout()">Salir</button>
   </div>
 </nav>
@@ -67,15 +67,15 @@
             <div class="card-body">
               <h4 style="font-size:.9rem;margin-bottom:.8rem">Métodos de pago activos</h4>
               <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)">
-                <div><div style="font-weight:600">💳 Tarjeta</div><div style="font-size:.78rem;color:var(--gray)">Visa, MC</div></div>
+                <div><div style="font-weight:600">Tarjeta</div><div style="font-size:.78rem;color:var(--gray)">Visa, MC</div></div>
                 <span style="background:var(--success);color:#fff;padding:.2rem .6rem;border-radius:20px;font-size:.78rem">✓ Activo</span>
               </div>
               <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)">
-                <div><div style="font-weight:600">🅿️ PayPal</div><div style="font-size:.78rem;color:var(--gray)">Cuenta PayPal</div></div>
+                <div><div style="font-weight:600">PayPal</div><div style="font-size:.78rem;color:var(--gray)">Cuenta PayPal</div></div>
                 <span style="background:var(--success);color:#fff;padding:.2rem .6rem;border-radius:20px;font-size:.78rem">✓ Activo</span>
               </div>
               <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0">
-                <div><div style="font-weight:600">💵 Efectivo</div><div style="font-size:.78rem;color:var(--gray)">Pago en mostrador</div></div>
+                <div><div style="font-weight:600">Efectivo</div><div style="font-size:.78rem;color:var(--gray)">Pago en mostrador</div></div>
                 <span style="background:var(--success);color:#fff;padding:.2rem .6rem;border-radius:20px;font-size:.78rem">✓ Activo</span>
               </div>
             </div>
@@ -209,7 +209,7 @@
       const pct = Math.round((n/total)*100);
       return `<div style="margin-bottom:.6rem">
         <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.2rem">
-          <span>${{tarjeta:'💳 Tarjeta',paypal:'🅿️ PayPal',efectivo:'💵 Efectivo'}[m]}</span>
+          <span>${{tarjeta:'Tarjeta',paypal:'PayPal',efectivo:'Efectivo'}[m]}</span>
           <span>${pct}%</span>
         </div>
         <div style="background:var(--border);border-radius:20px;height:6px">

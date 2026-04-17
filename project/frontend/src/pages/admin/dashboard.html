@@ -70,11 +70,11 @@
 <body>
 
 <nav class="navbar">
-  <div class="navbar-brand">🍔 TSJ <span>FOODIES</span>
+  <div class="navbar-brand">TSJ <span>FOODIES</span>
     <span style="font-size:.72rem;background:var(--danger);color:#fff;padding:.15rem .5rem;border-radius:20px;margin-left:.4rem">ADMIN</span>
   </div>
   <div class="nav-user">
-    <span>🛡️ <strong id="admin-name">...</strong></span>
+    <span><strong id="admin-name">...</strong></span>
     <button class="btn-logout" onclick="Auth.logout()">Salir</button>
   </div>
 </nav>
@@ -82,11 +82,11 @@
 <div class="layout">
   <aside class="sidebar">
     <div class="sidebar-section">Panel</div>
-    <a class="sidebar-link active" onclick="showSection('dashboard',this)"><span class="icon">📊</span> Dashboard</a>
+    <a class="sidebar-link active" onclick="showSection('dashboard',this)"> Dashboard</a>
     <div class="sidebar-section">Gestión</div>
-    <a class="sidebar-link" onclick="showSection('usuarios',this)"><span class="icon">👥</span> Usuarios</a>
-    <a class="sidebar-link" onclick="showSection('restaurantes',this)"><span class="icon">🏪</span> Restaurantes</a>
-    <a class="sidebar-link" onclick="showSection('pedidos',this)"><span class="icon">📋</span> Pedidos</a>
+    <a class="sidebar-link" onclick="showSection('usuarios',this)"> Usuarios</a>
+    <a class="sidebar-link" onclick="showSection('restaurantes',this)"> Restaurantes</a>
+    <a class="sidebar-link" onclick="showSection('pedidos',this)"> Pedidos</a>
   </aside>
 
   <main class="main-content">
@@ -108,8 +108,8 @@
 
     <!-- USUARIOS -->
     <div id="sec-usuarios" class="section">
-      <div class="page-header"><h1>👥 Usuarios</h1><p>Administra todos los usuarios del sistema</p></div>
-      <div class="search-bar"><span>🔍</span>
+      <div class="page-header"><h1>Usuarios</h1><p>Administra todos los usuarios del sistema</p></div>
+      <div class="search-bar">
         <input id="search-users" type="text" placeholder="Buscar nombre o email..." oninput="filtrarUsuarios()"/>
       </div>
       <div class="card"><div class="card-body"><div class="table-wrap">
@@ -121,8 +121,8 @@
     <!-- RESTAURANTES + PRODUCTOS -->
     <div id="sec-restaurantes" class="section">
       <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
-        <div><h1>🏪 Restaurantes</h1><p>CRUD completo · Selecciona uno para gestionar sus productos</p></div>
-        <button class="btn btn-primary" onclick="abrirModalRestaurante(null)">➕ Nuevo Restaurante</button>
+        <div><h1>Restaurantes</h1><p>Selecciona uno para gestionar sus productos</p></div>
+        <button class="btn btn-primary" onclick="abrirModalRestaurante(null)">Nuevo Restaurante</button>
       </div>
 
       <div class="crud-toolbar">
@@ -131,9 +131,9 @@
         </div>
         <div class="tabs" style="margin:0">
           <button class="tab-btn active" onclick="setFiltroRest(null,this)">Todos</button>
-          <button class="tab-btn" onclick="setFiltroRest('pendiente',this)">⏳ Pendientes</button>
-          <button class="tab-btn" onclick="setFiltroRest('activos',this)">✅ Activos</button>
-          <button class="tab-btn" onclick="setFiltroRest('inactivos',this)">🚫 Inactivos</button>
+          <button class="tab-btn" onclick="setFiltroRest('pendiente',this)">Pendientes</button>
+          <button class="tab-btn" onclick="setFiltroRest('activos',this)">Activos</button>
+          <button class="tab-btn" onclick="setFiltroRest('inactivos',this)">Inactivos</button>
         </div>
       </div>
       <p id="rest-count" style="font-size:.82rem;color:var(--gray);margin-bottom:1rem"></p>
@@ -157,8 +157,8 @@
 
     <!-- PEDIDOS -->
     <div id="sec-pedidos" class="section">
-      <div class="page-header"><h1>📋 Pedidos</h1><p>Supervisión de todos los pedidos</p></div>
-      <div class="search-bar"><span>🔍</span>
+      <div class="page-header"><h1>Pedidos</h1><p>Supervisión de todos los pedidos</p></div>
+      <div class="search-bar"><span></span>
         <input id="search-pedidos" type="text" placeholder="Buscar pedido..." oninput="filtrarPedidos()"/>
       </div>
       <div class="tabs" id="filtros-pedidos">
@@ -224,7 +224,7 @@
     <div id="modal-rest-err" class="form-error" style="display:none"></div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="cerrarModal('modal-rest')">Cancelar</button>
-      <button class="btn btn-primary" id="btn-guardar-rest" onclick="guardarRestaurante()">💾 Guardar</button>
+      <button class="btn btn-primary" id="btn-guardar-rest" onclick="guardarRestaurante()">Guardar</button>
     </div>
   </div>
 </div>
@@ -261,14 +261,14 @@
     <div id="grp-disponible" class="form-group" style="display:none">
       <label class="form-label">Disponibilidad</label>
       <select id="p-disponible" class="form-control">
-        <option value="true">✅ Disponible</option>
-        <option value="false">🚫 No disponible</option>
+        <option value="true">Disponible</option>
+        <option value="false">No disponible</option>
       </select>
     </div>
     <div id="modal-prod-err" class="form-error" style="display:none"></div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="cerrarModal('modal-prod')">Cancelar</button>
-      <button class="btn btn-primary" id="btn-guardar-prod" onclick="guardarProducto()">💾 Guardar</button>
+      <button class="btn btn-primary" id="btn-guardar-prod" onclick="guardarProducto()">Guardar</button>
     </div>
   </div>
 </div>
@@ -283,7 +283,7 @@
     <p id="modal-del-msg" style="color:var(--gray);line-height:1.65"></p>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="cerrarModal('modal-del')">Cancelar</button>
-      <button class="btn btn-danger" id="btn-del-confirm" onclick="ejecutarEliminar()">🗑️ Sí, eliminar</button>
+      <button class="btn btn-danger" id="btn-del-confirm" onclick="ejecutarEliminar()">Sí, eliminar</button>
     </div>
   </div>
 </div>
@@ -430,18 +430,18 @@ function renderRestaurantes(lista) {
       </div>
       <div class="rest-card-body">
         <div class="rest-card-name">${x(r.nombre)}</div>
-        <div class="rest-card-owner">👤 ${x(r.propietario || '—')} · ✉️ ${x(r.email || '—')}</div>
+        <div class="rest-card-owner">${x(r.propietario || '—')} · ${x(r.email || '—')}</div>
         <div class="rest-card-meta">
-          <span class="badge ${r.aprobado ? 'badge-listo' : 'badge-pendiente'}">${r.aprobado ? '✅ Aprobado' : '⏳ Pendiente'}</span>
+          <span class="badge ${r.aprobado ? 'badge-listo' : 'badge-pendiente'}">${r.aprobado ? 'Aprobado' : 'Pendiente'}</span>
           <span class="badge ${r.activo ? 'badge-en_preparacion' : 'badge-cancelado'}">${r.activo ? '🟢 Activo' : '🔴 Inactivo'}</span>
         </div>
       </div>
       <div class="rest-card-actions">
-        <button class="btn btn-sm btn-secondary" data-action="editar"  data-id="${r.id}">✏️ Editar</button>
+        <button class="btn btn-sm btn-secondary" data-action="editar"  data-id="${r.id}">Editar</button>
         <button class="btn btn-sm ${r.activo ? 'btn-warning' : 'btn-success'}" data-action="toggle" data-id="${r.id}">${r.activo ? '⏸️ Pausar' : '▶️ Activar'}</button>
         ${!r.aprobado ? `<button class="btn btn-sm btn-success span2" data-action="aprobar" data-id="${r.id}">✅ Aprobar</button>` : ''}
-        <button class="btn btn-sm btn-primary span2" data-action="productos" data-id="${r.id}">🍽️ Ver Productos</button>
-        <button class="btn btn-sm btn-danger  span2" data-action="eliminar" data-id="${r.id}">🗑️ Eliminar</button>
+        <button class="btn btn-sm btn-primary span2" data-action="productos" data-id="${r.id}">Ver Productos</button>
+        <button class="btn btn-sm btn-danger  span2" data-action="eliminar" data-id="${r.id}">Eliminar</button>
       </div>
     </div>`).join('');
 

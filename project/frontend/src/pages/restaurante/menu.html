@@ -9,15 +9,15 @@
 <body>
 
 <nav class="navbar">
-  <div class="navbar-brand">🍔 TSJ <span>FOODIES</span></div>
+  <div class="navbar-brand">TSJ <span>FOODIES</span></div>
   <div class="navbar-nav">
-    <a class="nav-link" href="dashboard.html">🏠 Inicio</a>
-    <a class="nav-link active" href="menu.html">🍽️ Menú</a>
-    <a class="nav-link" href="pagos.html">💳 Pagos</a>
-    <a class="nav-link" href="ventas.html">📊 Ventas</a>
+    <a class="nav-link" href="dashboard.html">Inicio</a>
+    <a class="nav-link active" href="menu.html">Menú</a>
+    <a class="nav-link" href="pagos.html">Pagos</a>
+    <a class="nav-link" href="ventas.html">Ventas</a>
   </div>
   <div class="nav-user">
-    <span>🏪 <strong id="rest-name">...</strong></span>
+    <span><strong id="rest-name">...</strong></span>
     <button class="btn-logout" onclick="Auth.logout()">Salir</button>
   </div>
 </nav>
@@ -25,7 +25,7 @@
 <div class="container">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
     <div class="page-header" style="margin:0">
-      <h1>🍽️ Gestión de Menú</h1>
+      <h1>Gestión de Menú</h1>
       <p>Administra tus productos y categorías</p>
     </div>
     <div style="display:flex;gap:.7rem">
@@ -36,7 +36,6 @@
 
   <!-- Buscador -->
   <div class="search-bar">
-    <span>🔍</span>
     <input id="search-input" type="text" placeholder="Buscar producto..." oninput="filtrarProductos()" />
   </div>
 
@@ -209,7 +208,7 @@
             <span style="font-size:.8rem;color:var(--gray)">⏱ ${p.tiempo_estimado} min</span>
           </div>
           <div style="display:flex;gap:.5rem;margin-top:.8rem">
-            <button class="btn btn-secondary btn-sm" style="flex:1" onclick="abrirEditarProducto(${p.id})">✏️ Editar</button>
+            <button class="btn btn-secondary btn-sm" style="flex:1" onclick="abrirEditarProducto(${p.id})">Editar</button>
             <button class="btn btn-danger btn-sm" onclick="pedirEliminar(${p.id},'${esc(p.nombre).replace(/'/g,"\\'")}')">🗑</button>
           </div>
         </div>
