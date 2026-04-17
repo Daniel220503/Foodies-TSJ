@@ -1,10 +1,17 @@
 // seed.js — datos de prueba para TSJ Foodies
-// Se ejecuta automáticamente al iniciar el servidor
+// Solo se ejecuta si la base de datos está vacía
 const bcrypt = require('bcrypt');
 const db     = require('../config/db');
 
 async function seed() {
   try {
+    // ✅ Guard: si ya hay usuarios, omitir seed completo
+    const { rows: check } = await db.query('SELECT COUNT(*) FROM usuarios');
+    if (parseInt(check[0].count) > 0) {
+      console.log('⏭️  Seed omitido — la base de datos ya tiene datos');
+      return;
+    }
+
     const hash = await bcrypt.hash('Test1234!', 10);
 
     const usuarios = [

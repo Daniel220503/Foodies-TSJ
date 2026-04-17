@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS restaurantes (
     imagen_url VARCHAR(255),
     activo BOOLEAN NOT NULL DEFAULT TRUE,
     aprobado BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMPTZ DEFAULT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

@@ -51,10 +51,6 @@ async function getRestaurantes(req, res) {
   } catch(e) { console.error('getRestaurantes:', e.message); res.status(500).json({ error: 'Error' }); }
 }
 
-/**
- * NUEVO: El admin crea restaurante + usuario propietario en un solo paso.
- * Body: { nombre, descripcion?, imagen_url?, email_propietario, password_propietario, nombre_propietario }
- */
 async function crearRestaurante(req, res) {
   const {
     nombre, descripcion, imagen_url,
@@ -74,14 +70,12 @@ async function crearRestaurante(req, res) {
   const pass  = password_propietario;
 
   try {
-    // Verificar que el correo no esté en uso
     const { rows: existe } = await db.query(
       'SELECT id FROM usuarios WHERE email=$1', [email]
     );
     if (existe.length)
       return res.status(409).json({ error: 'Ese correo ya está registrado en el sistema' });
 
-    // Crear usuario propietario con rol restaurante
     const hash = await bcrypt.hash(pass, 10);
     const { rows: nuevoUser } = await db.query(
       `INSERT INTO usuarios (nombre, email, password_hash, rol)
@@ -90,7 +84,6 @@ async function crearRestaurante(req, res) {
     );
     const usuario_id = nuevoUser[0].id;
 
-    // Crear el restaurante vinculado al usuario
     const { rows: nuevoRest } = await db.query(
       `INSERT INTO restaurantes (usuario_id, nombre, descripcion, imagen_url, aprobado, activo)
        VALUES ($1,$2,$3,$4,TRUE,TRUE) RETURNING id`,
@@ -129,7 +122,8 @@ async function actualizarRestaurante(req, res) {
 async function eliminarRestaurante(req, res) {
   try {
     const { rowCount } = await db.query(
-      'UPDATE restaurantes SET activo=FALSE, updated_at=NOW() WHERE id=$1', [req.params.id]
+      'UPDATE restaurantes SET activo=FALSE, updated_at=NOW() WHERE id=$1',
+      [req.params.id]
     );
     if (!rowCount) return res.status(404).json({ error: 'Restaurante no encontrado' });
     res.json({ message: 'Restaurante eliminado' });
@@ -226,7 +220,7 @@ async function getAllPedidos(req, res) {
       SELECT p.id, p.total, p.estado, p.prioridad, p.created_at,
              u.nombre AS cliente, r.nombre AS restaurante
       FROM pedidos p
-      JOIN usuarios    u ON p.usuario_id     = u.id
+      JOIN usuarios     u ON p.usuario_id     = u.id
       JOIN restaurantes r ON p.restaurante_id = r.id
       ORDER BY p.created_at DESC LIMIT 200
     `);

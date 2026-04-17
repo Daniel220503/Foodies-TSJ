@@ -11,8 +11,8 @@
 <nav class="navbar">
   <div class="navbar-brand">🍔 TSJ <span>FOODIES</span></div>
   <div class="navbar-nav">
-    <a class="nav-link" href="inicio.html">🏠 Inicio</a>
-    <a class="nav-link active" href="pedidos.html">📋 Mis Pedidos</a>
+    <a class="nav-link" href="inicio.html">Inicio</a>
+    <a class="nav-link active" href="pedidos.html">Mis Pedidos</a>
   </div>
   <div class="nav-user">
     <span>👤 <strong id="user-name">...</strong></span>
@@ -22,7 +22,7 @@
 
 <div class="container">
   <div class="page-header">
-    <h1>📋 Mis Pedidos</h1>
+    <h1> Mis Pedidos</h1>
     <p>Historial y seguimiento de tus pedidos</p>
   </div>
 
@@ -42,7 +42,7 @@
 <div id="comp-modal" class="modal-overlay hidden">
   <div class="modal">
     <div class="modal-header">
-      <h3>🧾 Comprobante</h3>
+      <h3> Comprobante</h3>
       <button class="modal-close" onclick="document.getElementById('comp-modal').classList.add('hidden')">✕</button>
     </div>
     <div class="modal-body" id="comp-body"></div>
@@ -117,7 +117,7 @@
       document.getElementById('comp-body').innerHTML = `
         <div class="comprobante">
           <div class="comprobante-header">
-            <div style="font-size:2rem">🧾</div>
+            <div style="font-size:2rem"></div>
             <div class="comprobante-folio">${c.folio}</div>
             <div style="font-size:.85rem;color:var(--gray)">${new Date(c.fecha).toLocaleString('es-MX')}</div>
           </div>
@@ -137,8 +137,8 @@
   }
 
   function estadoLabel(e) {
-    return { pendiente:'⏳ Pendiente', en_preparacion:'👨‍🍳 En preparación',
-             listo:'✅ Listo', entregado:'📦 Entregado', cancelado:'❌ Cancelado' }[e] || e;
+    return { pendiente:' Pendiente', en_preparacion:' En preparación',
+             listo:'✅ Listo', entregado:' Entregado', cancelado:'❌ Cancelado' }[e] || e;
   }
   function esc(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
