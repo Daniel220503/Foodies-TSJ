@@ -2,12 +2,8 @@
 
 Plataforma de pedidos de comida en línea para el Tecnológico Superior de Jalisco.
 
-## 🚀 Levantar el proyecto
 
-```bash
-# 1. Clonar el repo
-git clone https://github.com/Daniel220503/Foodies-TSJ.git
-cd Foodies-TSJ
+
 
 # 2. Levantar todo con Docker
 docker-compose up --build

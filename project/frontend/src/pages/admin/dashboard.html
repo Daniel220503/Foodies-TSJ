@@ -209,7 +209,7 @@
         <input id="r-prop-nombre" type="text" class="form-control" placeholder="Nombre completo"/>
       </div>
       <div class="form-group">
-        <label class="form-label">Correo institucional <span style="color:var(--danger)">*</span></label>
+        <label class="form-label">Correo<span style="color:var(--danger)">*</span></label>
         <input id="r-prop-email" type="email" class="form-control" placeholder="za000000@zapopan.tecmm.edu.mx" autocomplete="off"/>
       </div>
       <div class="form-group">
@@ -734,9 +734,9 @@ async function ejecutarEliminar() {
   finally { btn.disabled = false; btn.textContent = '🗑️ Sí, eliminar'; delFn = null; }
 }
 
-// Cerrar al click fuera
-document.querySelectorAll('.modal-overlay').forEach(o => {
-  o.addEventListener('click', e => { if (e.target === o) cerrarModal(o.id); });
+// Cerrar al click fuera — solo modal de confirmación, no formularios
+document.getElementById('modal-del').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-del')) cerrarModal('modal-del');
 });
 // Cerrar con Escape
 document.addEventListener('keydown', e => {
