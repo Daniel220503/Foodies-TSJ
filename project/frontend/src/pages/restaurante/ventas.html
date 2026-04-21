@@ -1,93 +1,102 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TSJ Foodies — Ventas</title>
-  <link rel="stylesheet" href="../../styles/main.css" />
+ <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>TSJ Foodies — Ventas</title>
+ <link rel="stylesheet" href="../../styles/main.css" />
 </head>
 <body>
 <nav class="navbar">
-  <div class="navbar-brand">🍔 TSJ <span>FOODIES</span></div>
-  <div class="navbar-nav">
-    <a class="nav-link" href="dashboard.html">🏠 Inicio</a>
-    <a class="nav-link" href="menu.html">🍽️ Menú</a>
-    <a class="nav-link" href="pagos.html">💳 Pagos</a>
-    <a class="nav-link active" href="ventas.html">📊 Ventas</a>
-  </div>
-  <div class="nav-user"><span>🏪 <strong id="rest-name">...</strong></span><button class="btn-logout" onclick="Auth.logout()">Salir</button></div>
+ <div class="navbar-brand">TSJ <span>FOODIES</span></div>
+ <div class="navbar-nav" id="navbar-nav">
+ <a class="nav-link" href="dashboard.html">Inicio</a>
+ <a class="nav-link" href="menu.html">Menú</a>
+ <a class="nav-link" href="pagos.html">Pagos</a>
+ <a class="nav-link active" href="ventas.html">Ventas</a>
+ </div>
+ <div class="nav-user">
+ <span><strong id="rest-name">...</strong></span>
+ <button class="btn-logout" onclick="Auth.logout()">Salir</button>
+ </div>
+ <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú">
+ <span></span><span></span><span></span>
+ </button>
 </nav>
 <div class="container">
-  <div class="page-header"><h1>📊 Resumen de Ventas</h1><p>Estadísticas de tu restaurante</p></div>
-  <div class="stats-grid" id="stats-grid"><div class="spinner"></div></div>
-  <div class="grid-2" style="margin-top:1.5rem">
-    <div class="card"><div class="card-body">
-      <h3 style="margin-bottom:1rem">Productos más vendidos</h3>
-      <div id="top-productos"></div>
-    </div></div>
-    <div class="card"><div class="card-body">
-      <h3 style="margin-bottom:1rem">Pedidos por estado</h3>
-      <div id="por-estado"></div>
-    </div></div>
-  </div>
+ <div class="page-header"><h1> Resumen de Ventas</h1><p>Estadísticas de tu restaurante</p></div>
+ <div class="stats-grid" id="stats-grid"><div class="spinner"></div></div>
+ <div class="grid-2" style="margin-top:1.5rem">
+ <div class="card"><div class="card-body">
+ <h3 style="margin-bottom:1rem">Productos más vendidos</h3>
+ <div id="top-productos"></div>
+ </div></div>
+ <div class="card"><div class="card-body">
+ <h3 style="margin-bottom:1rem">Pedidos por estado</h3>
+ <div id="por-estado"></div>
+ </div></div>
+ </div>
 </div>
 <script src="../../services/api.js"></script>
 <script>
-  const user = requireAuth('restaurante');
-  if(user){
-    document.getElementById('rest-name').textContent = user.nombre.split(' ')[0];
-    cargarStats();
-  }
-  async function cargarStats(){
-    try{
-      const pedidos = await Pedidos.delRestaurante();
-      const entregados = pedidos.filter(p=>p.estado==='entregado');
-      const totalVentas = entregados.reduce((s,p)=>s+parseFloat(p.total),0);
-      const totalPedidos = pedidos.length;
-      const ticket = entregados.length ? totalVentas/entregados.length : 0;
+ const user = requireAuth('restaurante');
+ if(user){
+ document.getElementById('rest-name').textContent = user.nombre.split(' ')[0];
+ cargarStats();
+ }
+ async function cargarStats(){
+ try{
+ const pedidos = await Pedidos.delRestaurante();
+ const entregados = pedidos.filter(p=>p.estado==='entregado');
+ const totalVentas = entregados.reduce((s,p)=>s+parseFloat(p.total),0);
+ const totalPedidos = pedidos.length;
+ const ticket = entregados.length ? totalVentas/entregados.length : 0;
 
-      // Stats cards
-      document.getElementById('stats-grid').innerHTML = `
-        <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-value">$${totalVentas.toFixed(2)}</div><div class="stat-label">Ventas totales</div></div>
-        <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-value">${totalPedidos}</div><div class="stat-label">Total pedidos</div></div>
-        <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-value">${entregados.length}</div><div class="stat-label">Entregados</div></div>
-        <div class="stat-card"><div class="stat-icon">🎫</div><div class="stat-value">$${ticket.toFixed(2)}</div><div class="stat-label">Ticket promedio</div></div>`;
+ // Stats cards
+ document.getElementById('stats-grid').innerHTML = `
+ <div class="stat-card"><div class="stat-icon"></div><div class="stat-value">$${totalVentas.toFixed(2)}</div><div class="stat-label">Ventas totales</div></div>
+ <div class="stat-card"><div class="stat-icon"></div><div class="stat-value">${totalPedidos}</div><div class="stat-label">Total pedidos</div></div>
+ <div class="stat-card"><div class="stat-icon"></div><div class="stat-value">${entregados.length}</div><div class="stat-label">Entregados</div></div>
+ <div class="stat-card"><div class="stat-icon"></div><div class="stat-value">$${ticket.toFixed(2)}</div><div class="stat-label">Ticket promedio</div></div>`;
 
-      // Top productos
-      const conteo = {};
-      pedidos.forEach(p=>p.items.forEach(i=>{
-        conteo[i.producto_nombre] = (conteo[i.producto_nombre]||0) + i.cantidad;
-      }));
-      const top = Object.entries(conteo).sort((a,b)=>b[1]-a[1]).slice(0,5);
-      const maxTop = top[0]?.[1]||1;
-      document.getElementById('top-productos').innerHTML = top.map(([n,c])=>`
-        <div style="margin-bottom:.8rem">
-          <div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.2rem">
-            <span>${esc(n)}</span><span><strong>${c}</strong> uds</span>
-          </div>
-          <div style="background:var(--border);border-radius:20px;height:8px">
-            <div style="width:${(c/maxTop)*100}%;background:var(--primary);height:8px;border-radius:20px"></div>
-          </div>
-        </div>`).join('') || '<p style="color:var(--gray)">Sin datos aún</p>';
+ // Top productos
+ const conteo = {};
+ pedidos.forEach(p=>p.items.forEach(i=>{
+ conteo[i.producto_nombre] = (conteo[i.producto_nombre]||0) + i.cantidad;
+ }));
+ const top = Object.entries(conteo).sort((a,b)=>b[1]-a[1]).slice(0,5);
+ const maxTop = top[0]?.[1]||1;
+ document.getElementById('top-productos').innerHTML = top.map(([n,c])=>`
+ <div style="margin-bottom:.8rem">
+ <div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.2rem">
+ <span>${esc(n)}</span><span><strong>${c}</strong> uds</span>
+ </div>
+ <div style="background:var(--border);border-radius:20px;height:8px">
+ <div style="width:${(c/maxTop)*100}%;background:var(--primary);height:8px;border-radius:20px"></div>
+ </div>
+ </div>`).join('') || '<p style="color:var(--gray)">Sin datos aún</p>';
 
-      // Por estado
-      const estados = ['pendiente','en_preparacion','listo','entregado','cancelado'];
-      const labels = {pendiente:'⏳ Pendiente',en_preparacion:'👨‍🍳 En prep.',listo:'✅ Listo',entregado:'📦 Entregado',cancelado:'❌ Cancelado'};
-      const colors = {pendiente:'#f59e0b',en_preparacion:'#3b82f6',listo:'#10b981',entregado:'#059669',cancelado:'#ef4444'};
-      document.getElementById('por-estado').innerHTML = estados.map(e=>{
-        const cnt = pedidos.filter(p=>p.estado===e).length;
-        const pct = totalPedidos ? Math.round((cnt/totalPedidos)*100) : 0;
-        return `<div style="margin-bottom:.8rem">
-          <div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.2rem">
-            <span>${labels[e]}</span><span>${cnt} (${pct}%)</span>
-          </div>
-          <div style="background:var(--border);border-radius:20px;height:8px">
-            <div style="width:${pct}%;background:${colors[e]};height:8px;border-radius:20px"></div>
-          </div>
-        </div>`;
-      }).join('');
-    }catch(e){ toast(e.message,'error'); }
-  }
-  function esc(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+ // Por estado
+ const estados = ['pendiente','en_preparacion','listo','entregado','cancelado'];
+ const labels = {pendiente:' Pendiente',en_preparacion:' En prep.',listo:' Listo',entregado:' Entregado',cancelado:' Cancelado'};
+ const colors = {pendiente:'#f59e0b',en_preparacion:'#3b82f6',listo:'#10b981',entregado:'#059669',cancelado:'#ef4444'};
+ document.getElementById('por-estado').innerHTML = estados.map(e=>{
+ const cnt = pedidos.filter(p=>p.estado===e).length;
+ const pct = totalPedidos ? Math.round((cnt/totalPedidos)*100) : 0;
+ return `<div style="margin-bottom:.8rem">
+ <div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.2rem">
+ <span>${labels[e]}</span><span>${cnt} (${pct}%)</span>
+ </div>
+ <div style="background:var(--border);border-radius:20px;height:8px">
+ <div style="width:${pct}%;background:${colors[e]};height:8px;border-radius:20px"></div>
+ </div>
+ </div>`;
+ }).join('');
+ }catch(e){ toast(e.message,'error'); }
+ }
+ function esc(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+ document.getElementById('nav-toggle').addEventListener('click', function(){
+  document.getElementById('navbar-nav').classList.toggle('open');
+ });
 </script>
 </body>
 </html>

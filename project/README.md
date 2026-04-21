@@ -1,4 +1,4 @@
-# 🍔 TSJ Foodies
+# TSJ Foodies
 
 Plataforma de pedidos de comida en línea para el Tecnológico Superior de Jalisco.
 
@@ -9,12 +9,12 @@ Plataforma de pedidos de comida en línea para el Tecnológico Superior de Jalis
 docker-compose up --build
 
 # 3. Abrir en el navegador
-# Frontend:  http://localhost:8080
-# API:       http://localhost:5000/api/health
+# Frontend: http://localhost:8080
+# API: http://localhost:5000/api/health
 # PostgreSQL: localhost:5433
 ```
 
-## 👤 Usuarios de prueba (contraseña: `Test1234!`)
+## Usuarios de prueba (contraseña: `Test1234!`)
 
 | Email | Rol |
 |---|---|
@@ -24,33 +24,33 @@ docker-compose up --build
 | juan@tsj.edu.mx | Cliente |
 | maria@tsj.edu.mx | Cliente |
 
-## 🗂 Estructura del proyecto
+## Estructura del proyecto
 
 ```
 Foodies-TSJ/
 ├── backend/
-│   ├── src/
-│   │   ├── config/       → BD (PostgreSQL) y middleware JWT
-│   │   ├── controllers/  → Lógica de negocio por módulo
-│   │   └── routes/       → Rutas de la API REST
-│   ├── Dockerfile
-│   └── package.json
+│ ├── src/
+│ │ ├── config/ → BD (PostgreSQL) y middleware JWT
+│ │ ├── controllers/ → Lógica de negocio por módulo
+│ │ └── routes/ → Rutas de la API REST
+│ ├── Dockerfile
+│ └── package.json
 ├── frontend/
-│   ├── index.html        → Login / Registro
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── alumno/   → inicio.html, pedidos.html
-│   │   │   ├── restaurante/ → dashboard.html, menu.html, pagos.html, ventas.html
-│   │   │   └── admin/    → dashboard.html
-│   │   ├── services/     → api.js (módulo centralizado)
-│   │   └── styles/       → main.css (estilos globales)
-│   └── Dockerfile
+│ ├── index.html → Login / Registro
+│ ├── src/
+│ │ ├── pages/
+│ │ │ ├── alumno/ → inicio.html, pedidos.html
+│ │ │ ├── restaurante/ → dashboard.html, menu.html, pagos.html, ventas.html
+│ │ │ └── admin/ → dashboard.html
+│ │ ├── services/ → api.js (módulo centralizado)
+│ │ └── styles/ → main.css (estilos globales)
+│ └── Dockerfile
 ├── db/
-│   └── init.sql          → Esquema PostgreSQL + datos de prueba
+│ └── init.sql → Esquema PostgreSQL + datos de prueba
 └── docker-compose.yml
 ```
 
-## 🛠 Stack tecnológico
+## Stack tecnológico
 
 - **Frontend:** HTML5 + CSS3 + JavaScript vanilla
 - **Backend:** Node.js + Express.js
@@ -58,7 +58,7 @@ Foodies-TSJ/
 - **Auth:** JWT + bcrypt
 - **Contenedores:** Docker + Docker Compose
 
-## 📡 API Endpoints principales
+## API Endpoints principales
 
 | Método | Ruta | Descripción |
 |---|---|---|
@@ -77,7 +77,7 @@ Foodies-TSJ/
 | GET | /api/comprobantes/:id | Ver comprobante |
 | GET | /api/admin/stats | Estadísticas (admin) |
 
-## 📚 Materias cubiertas
+## Materias cubiertas
 
 - **Programación Web:** Frontend HTML/CSS/JS + Backend Node/Express
 - **Ingeniería de Software:** Casos de uso, roles, arquitectura MVC
@@ -88,16 +88,16 @@ Foodies-TSJ/
 
 ---
 
-## 🌐 Landing Page
+## Landing Page
 
 La landing page del proyecto está en `frontend/landing/`.
 
 ```
 frontend/landing/
-├── index.html      ← Landing page principal
-├── css/styles.css  ← Estilos responsive dark theme
-├── js/script.js    ← FAQ, scroll reveal, menú móvil
-└── img/            ← Carpeta para og-image.png
+├── index.html ← Landing page principal
+├── css/styles.css ← Estilos responsive dark theme
+├── js/script.js ← FAQ, scroll reveal, menú móvil
+└── img/ ← Carpeta para og-image.png
 ```
 
 **Para verla localmente:**

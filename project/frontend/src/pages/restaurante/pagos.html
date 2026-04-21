@@ -1,72 +1,78 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TSJ Foodies — Pagos</title>
-  <link rel="stylesheet" href="../../styles/main.css" />
+ <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>TSJ Foodies — Pagos</title>
+ <link rel="stylesheet" href="../../styles/main.css" />
 </head>
 <body>
 <nav class="navbar">
-  <div class="navbar-brand">🍔 TSJ <span>FOODIES</span></div>
-  <div class="navbar-nav">
-    <a class="nav-link" href="dashboard.html">🏠 Inicio</a>
-    <a class="nav-link" href="menu.html">🍽️ Menú</a>
-    <a class="nav-link active" href="pagos.html">💳 Pagos</a>
-    <a class="nav-link" href="ventas.html">📊 Ventas</a>
-  </div>
-  <div class="nav-user">
-    <span>🏪 <strong id="rest-name">...</strong></span>
-    <button class="btn-logout" onclick="Auth.logout()">Salir</button>
-  </div>
+ <div class="navbar-brand">TSJ <span>FOODIES</span></div>
+ <div class="navbar-nav" id="navbar-nav">
+ <a class="nav-link" href="dashboard.html">Inicio</a>
+ <a class="nav-link" href="menu.html">Menú</a>
+ <a class="nav-link active" href="pagos.html">Pagos</a>
+ <a class="nav-link" href="ventas.html">Ventas</a>
+ </div>
+ <div class="nav-user">
+ <span><strong id="rest-name">...</strong></span>
+ <button class="btn-logout" onclick="Auth.logout()">Salir</button>
+ </div>
+ <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú">
+ <span></span><span></span><span></span>
+ </button>
 </nav>
 <div class="container">
-  <div class="page-header"><h1>💳 Historial de Pagos</h1><p>Registro de todos los pagos recibidos</p></div>
-  <div class="search-bar">
-    <span>🔍</span>
-    <input id="search" type="text" placeholder="Buscar por pedido o cliente..." oninput="filtrar()" />
-  </div>
-  <div class="card">
-    <div class="card-body">
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Pedido</th><th>Cliente</th><th>Productos</th><th>Total</th><th>Estado</th><th>Fecha</th></tr></thead>
-          <tbody id="tabla-body"><tr><td colspan="6"><div class="spinner" style="width:24px;height:24px;border-width:3px;margin:.5rem auto"></div></td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+ <div class="page-header"><h1> Historial de Pagos</h1><p>Registro de todos los pagos recibidos</p></div>
+ <div class="search-bar">
+ <span></span>
+ <input id="search" type="text" placeholder="Buscar por pedido o cliente..." oninput="filtrar()" />
+ </div>
+ <div class="card">
+ <div class="card-body">
+ <div class="table-wrap">
+ <table>
+ <thead><tr><th>Pedido</th><th>Cliente</th><th>Productos</th><th>Total</th><th>Estado</th><th>Fecha</th></tr></thead>
+ <tbody id="tabla-body"><tr><td colspan="6"><div class="spinner" style="width:24px;height:24px;border-width:3px;margin:.5rem auto"></div></td></tr></tbody>
+ </table>
+ </div>
+ </div>
+ </div>
 </div>
 <script src="../../services/api.js"></script>
 <script>
-  let todos = [];
-  const user = requireAuth('restaurante');
-  if(user){
-    document.getElementById('rest-name').textContent = user.nombre.split(' ')[0];
-    cargar();
-  }
-  async function cargar(){
-    try{
-      todos = await Pedidos.delRestaurante();
-      render(todos);
-    }catch(e){ toast(e.message,'error'); }
-  }
-  function filtrar(){
-    const q = document.getElementById('search').value.toLowerCase();
-    render(todos.filter(p => String(p.id).includes(q) || p.cliente_nombre.toLowerCase().includes(q)));
-  }
-  function render(pedidos){
-    document.getElementById('tabla-body').innerHTML = pedidos.map(p=>`
-      <tr>
-        <td>#${p.id}</td>
-        <td>${esc(p.cliente_nombre)}</td>
-        <td style="font-size:.82rem;color:var(--gray)">${p.items.map(i=>`${esc(i.producto_nombre)} ×${i.cantidad}`).join(', ')}</td>
-        <td><strong>$${parseFloat(p.total).toFixed(2)}</strong></td>
-        <td><span class="badge badge-${p.estado}">${estadoLabel(p.estado)}</span></td>
-        <td style="font-size:.82rem">${new Date(p.created_at).toLocaleString('es-MX')}</td>
-      </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Sin datos</td></tr>';
-  }
-  function estadoLabel(e){ return {pendiente:'⏳ Pendiente',en_preparacion:'👨‍🍳 En prep.',listo:'✅ Listo',entregado:'📦 Entregado',cancelado:'❌ Cancelado'}[e]||e; }
-  function esc(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+ let todos = [];
+ const user = requireAuth('restaurante');
+ if(user){
+ document.getElementById('rest-name').textContent = user.nombre.split(' ')[0];
+ cargar();
+ }
+ async function cargar(){
+ try{
+ todos = await Pedidos.delRestaurante();
+ render(todos);
+ }catch(e){ toast(e.message,'error'); }
+ }
+ function filtrar(){
+ const q = document.getElementById('search').value.toLowerCase();
+ render(todos.filter(p => String(p.id).includes(q) || p.cliente_nombre.toLowerCase().includes(q)));
+ }
+ function render(pedidos){
+ document.getElementById('tabla-body').innerHTML = pedidos.map(p=>`
+ <tr>
+ <td>#${p.id}</td>
+ <td>${esc(p.cliente_nombre)}</td>
+ <td style="font-size:.82rem;color:var(--gray)">${p.items.map(i=>`${esc(i.producto_nombre)} ×${i.cantidad}`).join(', ')}</td>
+ <td><strong>$${parseFloat(p.total).toFixed(2)}</strong></td>
+ <td><span class="badge badge-${p.estado}">${estadoLabel(p.estado)}</span></td>
+ <td style="font-size:.82rem">${new Date(p.created_at).toLocaleString('es-MX')}</td>
+ </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--gray)">Sin datos</td></tr>';
+ }
+ function estadoLabel(e){ return {pendiente:' Pendiente',en_preparacion:' En prep.',listo:' Listo',entregado:' Entregado',cancelado:' Cancelado'}[e]||e; }
+ function esc(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+ document.getElementById('nav-toggle').addEventListener('click', function(){
+  document.getElementById('navbar-nav').classList.toggle('open');
+ });
 </script>
 </body>
 </html>
