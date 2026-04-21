@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TSJ Foodies — Inicio</title>
+  <link rel="stylesheet" href="../../styles/main.css" />
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-brand">🍔 TSJ <span>FOODIES</span></div>
+  <div class="navbar-nav">
+    <a class="nav-link active" href="inicio.html">🏠 Inicio</a>
+    <a class="nav-link" href="pedidos.html">📋 Mis Pedidos</a>
+  </div>
+  <div class="nav-user">
+    <span>👤 <strong id="user-name">...</strong></span>
+    <button class="btn-logout" onclick="Auth.logout()">Salir</button>
+  </div>
+</nav>
+
+<div class="container">
+  <!-- Buscador -->
+  <div class="search-bar">
+    <span>🔍</span>
+    <input id="search-input" type="text" placeholder="Buscar restaurante o platillo..." oninput="filtrarRestaurantes()" />
+  </div>
+
+  <div class="page-header">
+    <h1>Restaurantes disponibles</h1>
+    <p>Elige un restaurante para ver su menú y hacer tu pedido</p>
+  </div>
+
+  <div id="restaurantes-grid" class="grid-3">
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<!-- Modal: Menú del restaurante -->
+<div id="menu-modal" class="modal-overlay hidden">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-header">
+      <h3 id="menu-modal-title">Menú</h3>
+      <button class="modal-close" onclick="closeMenuModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="tabs" id="categorias-tabs"></div>
+      <div id="productos-grid" class="grid-2"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Carrito -->
+<div id="cart-modal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🛒 Mi Carrito</h3>
+      <button class="modal-close" onclick="closeCartModal()">✕</button>
+    </div>
+    <div class="modal-body" id="cart-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeCartModal()">Seguir comprando</button>
+      <button class="btn btn-primary" onclick="irACheckout()">Proceder al pago</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Checkout -->
+<div id="checkout-modal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>💳 Finalizar Pedido</h3>
+      <button class="modal-close" onclick="closeCheckout()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="checkout-resumen" style="margin-bottom:1.2rem"></div>
+      <div class="form-group">
+        <label class="form-label">Notas (opcional)</label>
+        <input id="notas-pedido" type="text" class="form-control" placeholder="Sin cebolla, extra salsa..." />
+      </div>
+      <!-- Botón principal: Mercado Pago Checkout Pro -->
+      <button id="btn-mp" onclick="pagarConMP()"
+        style="width:100%;padding:.85rem;border:none;border-radius:10px;cursor:pointer;
+               background:#009ee3;color:#fff;font-size:1rem;font-weight:700;
+               display:flex;align-items:center;justify-content:center;gap:.6rem;margin-bottom:.75rem">
+        <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="16" fill="#fff"/>
+          <path d="M8 16.5c0-4.142 3.582-7.5 8-7.5s8 3.358 8 7.5c0 1.38-.4 2.668-1.09 3.75H9.09A7.44 7.44 0 0 1 8 16.5Z" fill="#009ee3"/>
+          <path d="M10.5 20.25h11l-1.5 2.25h-8l-1.5-2.25Z" fill="#009ee3"/>
+        </svg>
+        Pagar con Mercado Pago
+      </button>
+      <!-- Opción secundaria: efectivo -->
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+        <hr style="flex:1;border:none;border-top:1px solid #e5e7eb"/>
+        <span style="font-size:.8rem;color:#9ca3af">o</span>
+        <hr style="flex:1;border:none;border-top:1px solid #e5e7eb"/>
+      </div>
+      <button id="btn-efectivo" onclick="confirmarPedidoEfectivo()"
+        style="width:100%;padding:.7rem;border:1.5px solid #d1d5db;border-radius:10px;
+               cursor:pointer;background:#fff;color:#374151;font-size:.92rem;font-weight:600">
+        💵 Pagar en efectivo en mostrador
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeCheckout()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Comprobante -->
+<div id="comprobante-modal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Comprobante de Pago</h3>
+      <button class="modal-close" onclick="closeComprobante()">✕</button>
+    </div>
+    <div class="modal-body" id="comprobante-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeComprobante()">Listo</button>
+    </div>
+  </div>
+</div>
+
+<!-- FAB Carrito -->
+<button class="cart-fab" onclick="openCartModal()">
+  🛒
+  <span class="cart-badge" id="cart-count">0</span>
+</button>
+
+<script src="../../services/api.js?v=2"></script>
+<script>
+  let restaurantesData = [];
+  let menuActual = { categorias: [], productos: [], restaurante_id: null };
+
+  // Guard
+  const user = requireAuth('cliente');
+  if (user) {
+    document.getElementById('user-name').textContent = user.nombre.split(' ')[0];
+    cargarRestaurantes();
+    actualizarCartBadge();
+  }
+
+  async function cargarRestaurantes() {
+    try {
+      restaurantesData = await Restaurantes.getAll();
+      renderRestaurantes(restaurantesData);
+    } catch(e) {
+      document.getElementById('restaurantes-grid').innerHTML =
+        `<p style="color:var(--danger)">Error al cargar restaurantes: ${e.message}</p>`;
+    }
+  }
+
+  function renderRestaurantes(lista) {
+    const grid = document.getElementById('restaurantes-grid');
+    if (!lista.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+        <div class="icon"></div><h3>No hay restaurantes disponibles</h3>
+        <p>Pronto habrá más opciones</p></div>`;
+      return;
+    }
+    grid.innerHTML = lista.map(r => `
+      <div class="card" onclick="abrirMenu(${r.id}, '${escHtml(r.nombre)}')">
+        <div class="card-img-placeholder">🍽️</div>
+        <div class="card-body">
+          <div class="card-title">${escHtml(r.nombre)}</div>
+          <div class="card-desc">${escHtml(r.descripcion || 'Haz clic para ver el menú')}</div>
+          <button class="btn btn-primary btn-sm">Ver Menú →</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function filtrarRestaurantes() {
+    const q = document.getElementById('search-input').value.toLowerCase();
+    renderRestaurantes(restaurantesData.filter(r =>
+      r.nombre.toLowerCase().includes(q) || (r.descripcion||'').toLowerCase().includes(q)
+    ));
+  }
+
+  async function abrirMenu(id, nombre) {
+    document.getElementById('menu-modal-title').textContent = ` ${nombre}`;
+    document.getElementById('menu-modal').classList.remove('hidden');
+    document.getElementById('productos-grid').innerHTML = '<div class="spinner"></div>';
+    document.getElementById('categorias-tabs').innerHTML = '';
+    try {
+      const data = await Restaurantes.getMenu(id);
+      menuActual = { ...data, restaurante_id: id };
+      renderMenu(data);
+    } catch(e) {
+      document.getElementById('productos-grid').innerHTML = `<p style="color:var(--danger)">${e.message}</p>`;
+    }
+  }
+
+  function renderMenu({ categorias, productos }) {
+    // Tabs de categorías
+    const tabs = document.getElementById('categorias-tabs');
+    tabs.innerHTML = `<button class="tab-btn active" onclick="filtrarPorCategoria(null, this)">Todos</button>` +
+      categorias.map(c =>
+        `<button class="tab-btn" onclick="filtrarPorCategoria(${c.id}, this)">${escHtml(c.nombre)}</button>`
+      ).join('');
+    renderProductos(productos);
+  }
+
+  function filtrarPorCategoria(catId, btn) {
+    document.querySelectorAll('#categorias-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filtrados = catId ? menuActual.productos.filter(p => p.categoria_id === catId) : menuActual.productos;
+    renderProductos(filtrados);
+  }
+
+  function renderProductos(productos) {
+    const grid = document.getElementById('productos-grid');
+    if (!productos.length) {
+      grid.innerHTML = '<p style="color:var(--gray);padding:1rem">Sin productos en esta categoría</p>';
+      return;
+    }
+    grid.innerHTML = productos.map(p => `
+      <div class="card">
+        <div class="card-img-placeholder" style="height:120px;font-size:2rem">🍴</div>
+        <div class="card-body">
+          <div class="card-title">${escHtml(p.nombre)}</div>
+          <div class="card-desc">${escHtml(p.descripcion || '')}</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.5rem">
+            <span class="card-price">$${parseFloat(p.precio).toFixed(2)}</span>
+            <span style="font-size:.8rem;color:var(--gray)">⏱ ${p.tiempo_estimado} min</span>
+          </div>
+          <button class="btn btn-primary btn-sm btn-full" style="margin-top:.7rem"
+            onclick="agregarAlCarrito(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+            + Agregar
+          </button>
+        </div>
+      </div>`).join('');
+  }
+
+  function agregarAlCarrito(producto) {
+    const ok = Carrito.add(producto, menuActual.restaurante_id);
+    if (ok) { actualizarCartBadge(); toast('Agregado al carrito','success'); }
+  }
+
+  function actualizarCartBadge() {
+    document.getElementById('cart-count').textContent = Carrito.count();
+  }
+
+  function closeMenuModal() { document.getElementById('menu-modal').classList.add('hidden'); }
+
+  function openCartModal() {
+    const items = Carrito.get();
+    const body = document.getElementById('cart-body');
+    if (!items.length) {
+      body.innerHTML = `<div class="empty-state"><div class="icon">🛒</div><h3>Tu carrito está vacío</h3></div>`;
+    } else {
+      body.innerHTML = `
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Producto</th><th>Precio</th><th>Cant.</th><th></th></tr></thead>
+            <tbody>
+              ${items.map(i => `
+                <tr>
+                  <td>${escHtml(i.nombre)}</td>
+                  <td>$${parseFloat(i.precio).toFixed(2)}</td>
+                  <td>
+                    <input type="number" min="1" max="20" value="${i.cantidad}"
+                      style="width:55px;padding:.3rem;border:1px solid var(--border);border-radius:6px"
+                      onchange="Carrito.updateCantidad(${i.producto_id},+this.value);actualizarCartBadge();openCartModal()"/>
+                  </td>
+                  <td><button class="btn btn-danger btn-sm"
+                    onclick="Carrito.remove(${i.producto_id});actualizarCartBadge();openCartModal()">✕</button></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div style="text-align:right;margin-top:1rem;font-size:1.1rem;font-weight:700">
+          Total: $${Carrito.total().toFixed(2)}
+        </div>`;
+    }
+    document.getElementById('cart-modal').classList.remove('hidden');
+  }
+
+  function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
+
+  function irACheckout() {
+    const items = Carrito.get();
+    if (!items.length) { toast('Tu carrito está vacío','warning'); return; }
+    const resumen = `
+      <h4 style="margin-bottom:.7rem">Resumen del pedido</h4>
+      ${items.map(i => `<div class="comprobante-row">
+        <span>${escHtml(i.nombre)} x${i.cantidad}</span>
+        <span>$${(i.precio*i.cantidad).toFixed(2)}</span>
+      </div>`).join('')}
+      <div class="comprobante-row comprobante-total">
+        <span>Total</span><span>$${Carrito.total().toFixed(2)}</span>
+      </div>`;
+    document.getElementById('checkout-resumen').innerHTML = resumen;
+    closeCartModal();
+    document.getElementById('checkout-modal').classList.remove('hidden');
+  }
+
+  function closeCheckout() { document.getElementById('checkout-modal').classList.add('hidden'); }
+
+  // ── Pago con Mercado Pago Checkout Pro ──────────
+  async function pagarConMP() {
+    const items = Carrito.get();
+    if (!items.length) return;
+    const notas = document.getElementById('notas-pedido').value;
+    const btn   = document.getElementById('btn-mp');
+    btn.disabled = true; btn.textContent = '⏳ Creando orden...';
+    try {
+      const { checkout_url } = await MP.crearPreferencia({
+        restaurante_id: items[0].restaurante_id,
+        items: items.map(i => ({ producto_id: i.producto_id, cantidad: i.cantidad })),
+        notas
+      });
+      Carrito.clear();
+      actualizarCartBadge();
+      // Redirigir al Checkout Pro de Mercado Pago
+      window.location.href = checkout_url;
+    } catch(e) {
+      toast(e.message || 'No se pudo iniciar el pago. Intenta de nuevo.', 'error');
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#fff"/><path d="M8 16.5c0-4.142 3.582-7.5 8-7.5s8 3.358 8 7.5c0 1.38-.4 2.668-1.09 3.75H9.09A7.44 7.44 0 0 1 8 16.5Z" fill="#009ee3"/><path d="M10.5 20.25h11l-1.5 2.25h-8l-1.5-2.25Z" fill="#009ee3"/></svg> Pagar con Mercado Pago';
+    }
+  }
+
+  // ── Pago en efectivo (flujo simple) ─────────────
+  async function confirmarPedidoEfectivo() {
+    const items = Carrito.get();
+    if (!items.length) return;
+    const notas = document.getElementById('notas-pedido').value;
+    const btn   = document.getElementById('btn-efectivo');
+    btn.disabled = true; btn.textContent = '⏳ Procesando...';
+    try {
+      const { pedido_id } = await Pedidos.create({
+        restaurante_id: items[0].restaurante_id,
+        items: items.map(i => ({ producto_id: i.producto_id, cantidad: i.cantidad })),
+        notas
+      });
+      const { comprobante } = await Pagos.procesar({ pedido_id, metodo: 'efectivo' });
+      Carrito.clear();
+      actualizarCartBadge();
+      closeCheckout();
+      mostrarComprobante(comprobante);
+    } catch(e) {
+      toast(e.message, 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = '💵 Pagar en efectivo en mostrador';
+    }
+  }
+
+  function mostrarComprobante(c) {
+    document.getElementById('comprobante-body').innerHTML = `
+      <div class="comprobante">
+        <div class="comprobante-header">
+          <div style="font-size:2rem">🧾</div>
+          <div class="comprobante-folio">${c.folio}</div>
+          <div style="font-size:.85rem;color:var(--gray)">${new Date(c.fecha).toLocaleString('es-MX')}</div>
+        </div>
+        <div class="comprobante-row"><span>Cliente</span><span>${escHtml(c.usuario.nombre)}</span></div>
+        <div class="comprobante-row"><span>Restaurante</span><span>${escHtml(c.restaurante)}</span></div>
+        <div class="comprobante-row"><span>Método de pago</span><span>${c.metodo_pago}</span></div>
+        <div style="margin-top:.8rem;margin-bottom:.3rem;font-weight:600;font-size:.85rem;color:var(--gray)">PRODUCTOS</div>
+        ${c.items.map(i => `
+          <div class="comprobante-row">
+            <span>${escHtml(i.nombre)} x${i.cantidad}</span>
+            <span>$${parseFloat(i.subtotal).toFixed(2)}</span>
+          </div>`).join('')}
+        <div class="comprobante-row comprobante-total">
+          <span>TOTAL</span><span>$${parseFloat(c.total).toFixed(2)}</span>
+        </div>
+      </div>`;
+    document.getElementById('comprobante-modal').classList.remove('hidden');
+    toast('¡Pedido realizado exitosamente!','success');
+  }
+
+  function closeComprobante() { document.getElementById('comprobante-modal').classList.add('hidden'); }
+
+  function escHtml(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>
