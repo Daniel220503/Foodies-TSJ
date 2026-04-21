@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: tsj_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: tsj_foodies
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: foodies_backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgres://postgres:123456@postgres:5432/tsj_foodies
+<<<<<<< Updated upstream:docker-compose.yml
+=======
+      JWT_SECRET: tsj_foodies_secret_2024
+      PORT: 5000
+      MP_ACCESS_TOKEN: APP_USR-7851892538919915-041710-fd86d32613408c272744e82946c1a097-3343205088
+      FRONTEND_URL: http://localhost:8080
+>>>>>>> Stashed changes:project/docker-compose.yml
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./frontend
+    container_name: foodies_frontend
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
