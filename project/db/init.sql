@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS detalle_pedido (
 CREATE TABLE IF NOT EXISTS pagos (
     id SERIAL PRIMARY KEY,
     pedido_id INT NOT NULL UNIQUE REFERENCES pedidos(id),
-    metodo VARCHAR(20) NOT NULL CHECK (metodo IN ('tarjeta','paypal','efectivo')),
+    metodo VARCHAR(20) NOT NULL CHECK (metodo IN ('tarjeta','paypal','efectivo','mercadopago')),
     monto NUMERIC(10,2) NOT NULL,
     estado VARCHAR(20) NOT NULL DEFAULT 'pendiente'
         CHECK (estado IN ('pendiente','completado','fallido','reembolsado')),

@@ -16,6 +16,7 @@ app.use('/api/pedidos',      require('./routes/pedidos.routes'));
 app.use('/api/pagos',        require('./routes/pagos.routes'));
 app.use('/api/comprobantes', require('./routes/comprobantes.routes'));
 app.use('/api/admin',        require('./routes/admin.routes'));
+app.use('/api/mp',           require('./routes/mp.routes'));
 
 app.get('/api/health', (_, res) => res.json({ status: 'OK', app: 'TSJ Foodies API' }));
 

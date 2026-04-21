@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Resultado de Pago — TSJ Foodies</title>
+  <link rel="stylesheet" href="../../styles/main.css"/>
+  <style>
+    body { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; background:var(--light); }
+    .result-card {
+      background:#fff; border-radius:var(--radius-lg); padding:2.5rem 2rem;
+      max-width:480px; width:100%; text-align:center;
+      box-shadow:var(--shadow-lg);
+    }
+    .result-icon { font-size:4rem; margin-bottom:1rem; }
+    .result-title { font-size:1.4rem; font-weight:700; margin-bottom:.4rem; color:var(--dark); }
+    .result-sub { color:var(--gray); font-size:.92rem; margin-bottom:1.5rem; }
+    .spinner-wrap { padding:2rem 0; }
+    .comprobante { text-align:left; margin-top:1rem; }
+    .comprobante-row { display:flex; justify-content:space-between; padding:.35rem 0; border-bottom:1px solid var(--border); font-size:.88rem; }
+    .comprobante-row:last-child { border:none; }
+    .comprobante-total { font-weight:700; font-size:1rem; padding-top:.6rem; }
+    .folio { font-size:1.1rem; font-weight:700; color:var(--primary); letter-spacing:.05em; }
+  </style>
+</head>
+<body>
+
+<div class="result-card" id="result-card">
+  <div class="spinner-wrap"><div class="spinner"></div></div>
+  <p style="color:var(--gray)">Verificando tu pago...</p>
+</div>
+
+<script src="../../services/api.js?v=2"></script>
+<script>
+'use strict';
+
+const user = requireAuth('cliente');
+
+async function verificar() {
+  const params = new URLSearchParams(window.location.search);
+  const payment_id         = params.get('payment_id') || params.get('collection_id');
+  const external_reference = params.get('external_reference');
+  const status             = params.get('status') || params.get('collection_status');
+
+  const card = document.getElementById('result-card');
+
+  // Sin parámetros de MP — el usuario llegó directo
+  if (!payment_id || !external_reference) {
+    card.innerHTML = `
+      <div class="result-icon">🏠</div>
+      <div class="result-title">Página no disponible directamente</div>
+      <div class="result-sub">Esta página solo es accesible después de realizar un pago con Mercado Pago.</div>
+      <a href="inicio.html" class="btn btn-primary" style="display:inline-block;margin-top:1rem">Ir al inicio</a>`;
+    return;
+  }
+
+  try {
+    const data = await MP.verificar({ payment_id, external_reference, status });
+
+    if (data.status === 'approved') {
+      const c = data.comprobante;
+      card.innerHTML = `
+        <div class="result-icon">✅</div>
+        <div class="result-title">¡Pago aprobado!</div>
+        <div class="result-sub">Tu pedido está en preparación. Guarda tu comprobante.</div>
+        <div class="comprobante">
+          <div class="comprobante-row" style="justify-content:center;border:none;margin-bottom:.5rem">
+            <span class="folio">${x(c.folio)}</span>
+          </div>
+          <div class="comprobante-row"><span>Fecha</span><span>${new Date(c.fecha).toLocaleString('es-MX')}</span></div>
+          <div class="comprobante-row"><span>Cliente</span><span>${x(c.usuario.nombre)}</span></div>
+          <div class="comprobante-row"><span>Restaurante</span><span>${x(c.restaurante)}</span></div>
+          <div class="comprobante-row"><span>Método</span><span>Mercado Pago</span></div>
+          <div style="margin:.7rem 0 .3rem;font-weight:600;font-size:.8rem;color:var(--gray)">PRODUCTOS</div>
+          ${c.items.map(i => `
+            <div class="comprobante-row">
+              <span>${x(i.nombre)} x${i.cantidad}</span>
+              <span>$${parseFloat(i.subtotal).toFixed(2)}</span>
+            </div>`).join('')}
+          <div class="comprobante-row comprobante-total">
+            <span>TOTAL</span><span>$${parseFloat(c.total).toFixed(2)}</span>
+          </div>
+        </div>
+        <a href="inicio.html" class="btn btn-primary" style="display:inline-block;margin-top:1.5rem;width:100%">🏠 Volver al inicio</a>
+        <a href="pedidos.html" class="btn btn-secondary" style="display:inline-block;margin-top:.5rem;width:100%">📋 Ver mis pedidos</a>`;
+
+    } else if (data.status === 'pending') {
+      card.innerHTML = `
+        <div class="result-icon">⏳</div>
+        <div class="result-title">Pago pendiente</div>
+        <div class="result-sub">Tu pago está siendo procesado. Te notificaremos cuando sea confirmado.<br>
+          <small style="color:var(--gray)">Pedido #${data.pedido_id}</small></div>
+        <a href="pedidos.html" class="btn btn-primary" style="display:inline-block;margin-top:1.5rem">📋 Ver mis pedidos</a>`;
+
+    } else {
+      card.innerHTML = `
+        <div class="result-icon">❌</div>
+        <div class="result-title">Pago no completado</div>
+        <div class="result-sub">El pago fue rechazado o cancelado. Puedes intentarlo de nuevo.</div>
+        <a href="inicio.html" class="btn btn-primary" style="display:inline-block;margin-top:1.5rem">🔄 Intentar de nuevo</a>`;
+    }
+
+  } catch(e) {
+    card.innerHTML = `
+      <div class="result-icon">⚠️</div>
+      <div class="result-title">No pudimos confirmar tu pago</div>
+      <div class="result-sub">${x(e.message)}<br><br>
+        Si el cargo fue realizado, tu pedido aparecerá en <strong>Mis Pedidos</strong> en unos minutos.</div>
+      <a href="pedidos.html" class="btn btn-primary" style="display:inline-block;margin-top:1rem">📋 Ver mis pedidos</a>
+      <a href="inicio.html" class="btn btn-secondary" style="display:inline-block;margin-top:.5rem">Ir al inicio</a>`;
+  }
+}
+
+function x(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+if (user) verificar();
+</script>
+</body>
+</html>

@@ -76,6 +76,12 @@ const Pagos = {
  procesar: (d) => api('POST', '/pagos', d)
 };
 
+// ── Mercado Pago ────────────────────────────────
+const MP = {
+  crearPreferencia: (d) => api('POST', '/mp/preferencia', d),
+  verificar:        (d) => api('POST', '/mp/verificar', d)
+};
+
 // ── Comprobantes ───────────────────────────────
 const Comprobantes = {
  get: (pedidoId) => api('GET', `/comprobantes/${pedidoId}`)

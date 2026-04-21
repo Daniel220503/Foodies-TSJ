@@ -15,11 +15,6 @@ services:
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
   backend:
     build: ./backend
@@ -31,9 +26,10 @@ services:
       DATABASE_URL: postgres://postgres:123456@postgres:5432/tsj_foodies
       JWT_SECRET: tsj_foodies_secret_2024
       PORT: 5000
+      MP_ACCESS_TOKEN: APP_USR-7851892538919915-041710-fd86d32613408c272744e82946c1a097-3343205088
+      FRONTEND_URL: http://localhost:8080
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
 
   frontend:
     build: ./frontend
