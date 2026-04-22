@@ -45,7 +45,8 @@
 <div id="menu-modal" class="modal-overlay hidden">
  <div class="modal" style="max-width:680px">
  <div class="modal-header">
- <h3 id="menu-modal-title">Menú</h3>
+ <button class="btn btn-secondary btn-sm" onclick="closeMenuModal()" style="margin-right:.75rem;display:flex;align-items:center;gap:.35rem">← Regresar</button>
+ <h3 id="menu-modal-title" style="flex:1">Menú</h3>
  <button class="modal-close" onclick="closeMenuModal()"></button>
  </div>
  <div class="modal-body">
@@ -219,7 +220,22 @@
  grid.innerHTML = '<p style="color:var(--gray);padding:1rem">Sin productos en esta categoría</p>';
  return;
  }
- grid.innerHTML = productos.map(p => `
+ const carrito = Carrito.get();
+ grid.innerHTML = productos.map(p => {
+ const enCarrito = carrito.find(i => i.producto_id === p.id);
+ const cantidad = enCarrito ? enCarrito.cantidad : 0;
+ const pData = JSON.stringify(p).replace(/"/g,'&quot;');
+ const controles = cantidad > 0
+ ? `<div style="display:flex;align-items:center;gap:.5rem;margin-top:.7rem">
+ <button class="btn btn-secondary btn-sm" style="width:2.2rem;padding:0;font-size:1.1rem"
+ onclick="quitarDelCarrito(${p.id})">−</button>
+ <span style="min-width:1.5rem;text-align:center;font-weight:700">${cantidad}</span>
+ <button class="btn btn-primary btn-sm" style="width:2.2rem;padding:0;font-size:1.1rem"
+ onclick="agregarAlCarrito(${pData})">+</button>
+ </div>`
+ : `<button class="btn btn-primary btn-sm btn-full" style="margin-top:.7rem"
+ onclick="agregarAlCarrito(${pData})">+ Agregar</button>`;
+ return `
  <div class="card">
  <div class="card-img-placeholder" style="height:120px;font-size:2rem"></div>
  <div class="card-body">
@@ -229,17 +245,25 @@
  <span class="card-price">$${parseFloat(p.precio).toFixed(2)}</span>
  <span style="font-size:.8rem;color:var(--gray)"> ${p.tiempo_estimado} min</span>
  </div>
- <button class="btn btn-primary btn-sm btn-full" style="margin-top:.7rem"
- onclick="agregarAlCarrito(${JSON.stringify(p).replace(/"/g,'&quot;')})">
- + Agregar
- </button>
+ ${controles}
  </div>
- </div>`).join('');
+ </div>`;
+ }).join('');
  }
 
  function agregarAlCarrito(producto) {
  const ok = Carrito.add(producto, menuActual.restaurante_id);
- if (ok) { actualizarCartBadge(); toast('Agregado al carrito','success'); }
+ if (ok) { actualizarCartBadge(); renderProductos(menuActual.productos); toast('Agregado','success'); }
+ }
+
+ function quitarDelCarrito(producto_id) {
+ const items = Carrito.get();
+ const item = items.find(i => i.producto_id === producto_id);
+ if (!item) return;
+ if (item.cantidad <= 1) Carrito.remove(producto_id);
+ else Carrito.updateCantidad(producto_id, item.cantidad - 1);
+ actualizarCartBadge();
+ renderProductos(menuActual.productos);
  }
 
  function actualizarCartBadge() {

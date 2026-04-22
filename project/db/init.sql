@@ -27,7 +27,8 @@ CREATE TABLE IF NOT EXISTS restaurantes (
     aprobado BOOLEAN NOT NULL DEFAULT FALSE,
     deleted_at TIMESTAMPTZ DEFAULT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE (usuario_id)
 );
 
 -- CATEGORIAS
