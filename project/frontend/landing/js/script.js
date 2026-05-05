@@ -438,7 +438,7 @@ function showSuccessState(form, btn, originalBtnText) {
       <div class="success-icon">🎉</div>
       <h3 class="success-title">¡Cuenta creada con éxito!</h3>
       <p class="success-sub">Redirigiendo a la plataforma en <span id="countdown">3</span>s...</p>
-      <a href="index.html" class="btn btn-primary btn-full" style="margin-top:1.25rem;">
+      <a href="/login.html" class="btn btn-primary btn-full" style="margin-top:1.25rem;">
         Ir a TSJ Foodies →
       </a>
     `;
@@ -452,7 +452,7 @@ function showSuccessState(form, btn, originalBtnText) {
       if (countEl) countEl.textContent = String(count);
       if (count <= 0) {
         clearInterval(timer);
-        window.location.href = 'index.html';
+        window.location.href = '/login.html';
       }
     }, 1000);
 

@@ -18,11 +18,11 @@ docker-compose up --build
 
 | Email | Rol |
 |---|---|
-| admin@tsj.edu.mx | Administrador |
-| tacos@tsj.edu.mx | Restaurante |
-| tortas@tsj.edu.mx | Restaurante |
-| juan@tsj.edu.mx | Cliente |
-| maria@tsj.edu.mx | Cliente |
+| admin@zapopan.tecmm.edu.mx | Administrador |
+| tacos@zapopan.tecmm.edu.mx | Restaurante |
+| tortas@zapopan.tecmm.edu.mx | Restaurante |
+| juan@zapopan.tecmm.edu.mx | Cliente |
+| maria@zapopan.tecmm.edu.mx | Cliente |
 
 ## Estructura del proyecto
 
@@ -62,7 +62,7 @@ Foodies-TSJ/
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| POST | /api/auth/register | Registro con @tsj.edu.mx |
+| POST | /api/auth/register | Registro con @zapopan.tecmm.edu.mx |
 | POST | /api/auth/login | Login → retorna JWT |
 | GET | /api/restaurantes | Listar restaurantes |
 | GET | /api/restaurantes/:id/menu | Menú de un restaurante |
