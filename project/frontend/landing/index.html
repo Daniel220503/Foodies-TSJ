@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foodis TSJ Zapopan — Pide comida en el Tecnológico Superior de Jalisco</title>
+  <meta name="description" content="Plataforma de pedidos de comida exclusiva para estudiantes del TSJ. Pide, paga en línea y recoge sin filas. Gratis con tu correo @zapopan.tecmm.edu.mx" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="Foodis TSJ Zapopan — Pide. Paga. Disfruta." />
+  <meta property="og:description" content="Pide comida en el TSJ sin filas. Solo con @zapopan.tecmm.edu.mx" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23c8441a'/><text y='.85em' x='50%' text-anchor='middle' font-size='62' font-family='sans-serif' font-weight='900' fill='white'>F</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,700&family=Outfit:wght@400;500;600;700&display=swap"
+    rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" /></noscript>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* ── Logo Foodis ── */
+    .logo-foodis { font-family: var(--font-display); font-size: 1.55rem; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
+    .logo-foodis .f-orange { color: #c8441a; }
+    .logo-foodis .f-green  { color: #2e8b4a; }
+    .logo-sub { display: block; font-size: .65rem; font-weight: 600; letter-spacing: .08em; color: #1a2056; text-transform: uppercase; margin-top: 1px; }
+    .footer-brand .logo-sub { color: #cbd5e1; }
+    .footer-brand .f-orange { color: #f4a06a; }
+    .footer-brand .f-green  { color: #6ee7a0; }
+    /* ── Avatares iniciales ── */
+    .avatar-initial { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: .85rem; color: #fff; flex-shrink: 0; }
+    .av-1 { background: #c8441a; }
+    .av-2 { background: #2e8b4a; }
+    .av-3 { background: #1a2056; }
+    .av-4 { background: #b45309; }
+    /* ── Iconos beneficios/perks como SVG box ── */
+    .icon-box { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .icon-box svg { width: 24px; height: 24px; }
+    /* ── Rest cards sin emoji ── */
+    .rest-icon-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .rest-icon-box svg { width: 48px; height: 48px; opacity: .9; }
+    /* ── Chips sin emoji ── */
+    .chip-time::before { content: ''; display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid currentColor; margin-right: 4px; vertical-align: middle; }
+  </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+
+<!-- Fondo decorativo sin emojis -->
+<div class="hero-blob" aria-hidden="true"></div>
+<div class="hero-particles" aria-hidden="true">
+  <span class="particle" style="font-size:0;width:8px;height:8px;border-radius:50%;background:#c8441a33"></span>
+  <span class="particle" style="font-size:0;width:6px;height:6px;border-radius:50%;background:#2e8b4a33"></span>
+  <span class="particle" style="font-size:0;width:10px;height:10px;border-radius:50%;background:#1a205633"></span>
+  <span class="particle" style="font-size:0;width:7px;height:7px;border-radius:50%;background:#b4530933"></span>
+  <span class="particle" style="font-size:0;width:9px;height:9px;border-radius:50%;background:#c8441a22"></span>
+  <span class="particle" style="font-size:0;width:5px;height:5px;border-radius:50%;background:#2e8b4a22"></span>
+  <span class="particle" style="font-size:0;width:11px;height:11px;border-radius:50%;background:#1a205622"></span>
+</div>
+
+<!-- ══ HEADER ════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a href="#inicio" class="logo" aria-label="Foodis TSJ Zapopan — inicio">
+      <span class="logo-foodis">
+        <span class="f-orange">Foodi</span><span class="f-green">s</span>
+      </span>
+      <span class="logo-sub">TSJ Zapopan</span>
+    </a>
+    <nav class="main-nav" id="main-nav" role="navigation" aria-label="Menú principal">
+      <ul class="nav-list" role="list">
+        <li><a href="#como-funciona" class="nav-link">Cómo funciona</a></li>
+        <li><a href="#restaurantes"  class="nav-link">Restaurantes</a></li>
+        <li><a href="#beneficios"    class="nav-link">Beneficios</a></li>
+        <li><a href="#faq"           class="nav-link">FAQ</a></li>
+      </ul>
+    </nav>
+    <a href="../login.html" class="btn btn-primary btn-sm nav-cta">Entrar →</a>
+    <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-nav" type="button">
+      <span class="hamburger-line" aria-hidden="true"></span>
+      <span class="hamburger-line" aria-hidden="true"></span>
+      <span class="hamburger-line" aria-hidden="true"></span>
+    </button>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <!-- ══ HERO ════════════════════════════════════ -->
+  <section class="hero" id="inicio" aria-labelledby="hero-title">
+
+    <div class="hero-left">
+      <div class="hero-eyebrow" role="note">
+        <span class="eyebrow-dot" aria-hidden="true"></span>
+        Exclusivo · Comunidad TSJ
+      </div>
+
+      <h1 id="hero-title" class="hero-title">
+        Tu antojo favorito,<br>
+        listo antes de que<br>
+        <em>salgas de clase.</em>
+      </h1>
+
+      <p class="hero-subtitle">
+        Pide desde tu cel, paga en línea y recoge sin filas.
+        La plataforma de comida hecha para estudiantes del
+        Tecnológico Superior de Jalisco.
+      </p>
+
+      <div class="hero-actions">
+        <a href="../login.html" class="btn btn-primary btn-lg">Crear cuenta gratis</a>
+        <a href="#como-funciona" class="btn btn-outline btn-lg">¿Cómo funciona?</a>
+      </div>
+
+      <div class="hero-proof">
+        <div class="proof-avatars" aria-hidden="true">
+          <div class="proof-avatar avatar-initial av-1">J</div>
+          <div class="proof-avatar avatar-initial av-2">M</div>
+          <div class="proof-avatar avatar-initial av-3">C</div>
+          <div class="proof-avatar avatar-initial av-4">A</div>
+        </div>
+        <p class="proof-text">
+          <strong>+200 estudiantes</strong> ya piden en el TSJ
+        </p>
+      </div>
+    </div>
+
+    <!-- Columna derecha: visual interactivo -->
+    <div class="hero-right">
+      <div class="hero-visual">
+
+        <!-- Card flotante superior -->
+        <div class="float-card float-card-1" aria-hidden="true">
+          <span class="float-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#2e8b4a" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </span>
+          <div>
+            <div>Pedido listo</div>
+            <div class="float-sub">Tacos El Compa · hace 2 min</div>
+          </div>
+        </div>
+
+        <!-- Card principal -->
+        <div class="visual-main">
+          <span class="visual-emoji-big" style="font-size:0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="#c8441a" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/><circle cx="12" cy="12" r="9" stroke="#c8441a" stroke-width="1.5"/></svg>
+          </span>
+          <div class="visual-rest-name">Tacos El Compa</div>
+          <div class="visual-desc">Tacos al pastor, quesadillas y más</div>
+          <div class="visual-meta">
+            <span class="visual-chip">~10 min</span>
+            <span class="visual-chip green">Abierto</span>
+            <span class="visual-chip">Desde $25</span>
+          </div>
+        </div>
+
+        <!-- Card flotante inferior -->
+        <div class="float-card float-card-2" aria-hidden="true">
+          <span class="float-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#c8441a" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          </span>
+          <div>
+            <div>Pago completado</div>
+            <div class="float-sub">$75.00 · Comprobante listo</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ STATS BAR ════════════════════════════════ -->
+  <div class="stats-bar" role="list" aria-label="Estadísticas de la plataforma">
+    <div class="stats-inner container">
+      <div class="stat-item" role="listitem">
+        <strong class="stat-num">3</strong>
+        <span class="stat-label">Roles del sistema</span>
+      </div>
+      <div class="stats-divider" role="separator" aria-hidden="true"></div>
+      <div class="stat-item" role="listitem">
+        <strong class="stat-num">100%</strong>
+        <span class="stat-label">Sin efectivo</span>
+      </div>
+      <div class="stats-divider" role="separator" aria-hidden="true"></div>
+      <div class="stat-item" role="listitem">
+        <strong class="stat-num">&lt;2 min</strong>
+        <span class="stat-label">Por pedido</span>
+      </div>
+      <div class="stats-divider" role="separator" aria-hidden="true"></div>
+      <div class="stat-item" role="listitem">
+        <strong class="stat-num">0 $</strong>
+        <span class="stat-label">Costo para alumnos</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MARQUEE ══════════════════════════════════ -->
+  <aside class="marquee-band" aria-hidden="true">
+    <div class="marquee-track">
+      <div class="marquee-content">
+        <span>TACOS AL PASTOR</span><span class="sep"> ✦ </span>
+        <span>PEDIDOS RÁPIDOS</span><span class="sep"> ✦ </span>
+        <span>PAGO SEGURO</span><span class="sep"> ✦ </span>
+        <span>SIN FILAS</span><span class="sep"> ✦ </span>
+        <span>TORTAS AHOGADAS</span><span class="sep"> ✦ </span>
+        <span>MENÚ DIGITAL</span><span class="sep"> ✦ </span>
+        <span>EXCLUSIVO TSJ</span><span class="sep"> ✦ </span>
+        <span>TACOS AL PASTOR</span><span class="sep"> ✦ </span>
+        <span>PEDIDOS RÁPIDOS</span><span class="sep"> ✦ </span>
+        <span>PAGO SEGURO</span><span class="sep"> ✦ </span>
+        <span>SIN FILAS</span><span class="sep"> ✦ </span>
+        <span>TORTAS AHOGADAS</span><span class="sep"> ✦ </span>
+        <span>MENÚ DIGITAL</span><span class="sep"> ✦ </span>
+        <span>EXCLUSIVO TSJ</span><span class="sep"> ✦ </span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ CÓMO FUNCIONA ════════════════════════════ -->
+  <section class="how-it-works" id="como-funciona" aria-labelledby="how-title">
+    <div class="container">
+      <header class="section-header">
+        <span class="section-tag">¿Cómo funciona?</span>
+        <h2 id="how-title" class="section-title">3 pasos y ya<br>estás comiendo</h2>
+        <p class="section-sub">Sin apps raras, sin efectivo, sin rollos.</p>
+      </header>
+      <ol class="steps-grid" aria-label="Pasos para hacer un pedido">
+        <li class="step-card reveal">
+          <div class="step-number" aria-hidden="true">01</div>
+          <div class="step-icon" aria-hidden="true" style="font-size:0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/></svg>
+          </div>
+          <h3 class="step-title">Regístrate con tu correo TSJ</h3>
+          <p class="step-desc">Usa tu correo <strong>@zapopan.tecmm.edu.mx</strong>. Solo para la comunidad. Gratis siempre.</p>
+        </li>
+        <li class="step-card reveal">
+          <div class="step-number" aria-hidden="true">02</div>
+          <div class="step-icon" aria-hidden="true" style="font-size:0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+          </div>
+          <h3 class="step-title">Elige tu restaurante y platillo</h3>
+          <p class="step-desc">Explora menús, personaliza tu pedido y confírmalo en segundos.</p>
+        </li>
+        <li class="step-card reveal">
+          <div class="step-number" aria-hidden="true">03</div>
+          <div class="step-icon" aria-hidden="true" style="font-size:0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          </div>
+          <h3 class="step-title">Paga en línea y recoge</h3>
+          <p class="step-desc">Pago seguro, comprobante digital y sin esperar en ninguna fila.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ══ RESTAURANTES ══════════════════════════════ -->
+  <section class="restaurants" id="restaurantes" aria-labelledby="rest-title">
+    <div class="container">
+      <header class="section-header reveal">
+        <span class="section-tag">Restaurantes disponibles</span>
+        <h2 id="rest-title" class="section-title">Todos tus favoritos<br>del plantel, aquí</h2>
+        <p class="section-sub">Más restaurantes se suman cada semana.</p>
+      </header>
+      <ul class="restaurants-grid" aria-label="Lista de restaurantes">
+        <li class="rest-card reveal" tabindex="0" role="article" aria-label="Tacos El Compa, abierto, desde $25">
+          <figure class="rest-figure rest-tacos">
+            <div class="rest-icon-box">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-6-6h12"/><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.5"/></svg>
+            </div>
+            <figcaption class="rest-status rest-open">Abierto</figcaption>
+          </figure>
+          <div class="rest-info">
+            <h3 class="rest-name">Tacos El Compa</h3>
+            <div class="rest-meta"><span class="rest-rating" aria-label="5 estrellas">★★★★★</span><span class="rest-time">~10 min</span><span class="rest-price">Desde $25</span></div>
+          </div>
+        </li>
+        <li class="rest-card reveal" tabindex="0" role="article" aria-label="Tortas Don Beto, abierto, desde $35">
+          <figure class="rest-figure rest-tortas">
+            <div class="rest-icon-box">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M3 8h18M3 16h18"/><rect x="2" y="5" width="20" height="14" rx="2" stroke="#fff" stroke-width="1.5"/></svg>
+            </div>
+            <figcaption class="rest-status rest-open">Abierto</figcaption>
+          </figure>
+          <div class="rest-info">
+            <h3 class="rest-name">Tortas Don Beto</h3>
+            <div class="rest-meta"><span class="rest-rating" aria-label="4 estrellas">★★★★☆</span><span class="rest-time">~15 min</span><span class="rest-price">Desde $35</span></div>
+          </div>
+        </li>
+        <li class="rest-card reveal" tabindex="0" role="article" aria-label="Pizza Express TSJ, próximamente">
+          <figure class="rest-figure rest-pizza">
+            <div class="rest-icon-box">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 3l9 18H3L12 3z"/></svg>
+            </div>
+            <figcaption class="rest-status rest-soon">Próximamente</figcaption>
+          </figure>
+          <div class="rest-info">
+            <h3 class="rest-name">Pizza Express TSJ</h3>
+            <div class="rest-meta"><span class="rest-rating" aria-label="5 estrellas">★★★★★</span><span class="rest-time">~20 min</span><span class="rest-price">Desde $50</span></div>
+          </div>
+        </li>
+        <li class="rest-card reveal" tabindex="0" role="article" aria-label="Sushi y Más, próximamente">
+          <figure class="rest-figure rest-sushi">
+            <div class="rest-icon-box">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>
+            </div>
+            <figcaption class="rest-status rest-soon">Próximamente</figcaption>
+          </figure>
+          <div class="rest-info">
+            <h3 class="rest-name">Sushi &amp; Más</h3>
+            <div class="rest-meta"><span class="rest-rating" aria-label="4 estrellas">★★★★☆</span><span class="rest-time">~25 min</span><span class="rest-price">Desde $60</span></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══ BENEFICIOS ══════════════════════════════ -->
+  <section class="benefits" id="beneficios" aria-labelledby="benefits-title">
+    <div class="container">
+      <header class="section-header reveal">
+        <span class="section-tag">¿Por qué elegirnos?</span>
+        <h2 id="benefits-title" class="section-title">Diseñado por estudiantes<br>para estudiantes</h2>
+        <p class="section-sub">Cada función tiene una razón de ser.</p>
+      </header>
+      <ul class="benefits-grid" aria-label="Beneficios de la plataforma">
+        <li class="benefit-card reveal">
+          <div class="benefit-icon" aria-hidden="true" style="font-size:0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          </div>
+          <div><h3 class="benefit-title">Pago 100% digital</h3><p class="benefit-desc">Olvídate del efectivo. Paga rápido y seguro desde tu celular.</p></div>
+        </li>
+        <li class="benefit-card reveal">
+          <div class="benefit-icon" aria-hidden="true" style="font-size:0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <div><h3 class="benefit-title">Pedidos ultrarrápidos</h3><p class="benefit-desc">Haz tu pedido en menos de 2 minutos. Sin complicaciones.</p></div>
+        </li>
+        <li class="benefit-card reveal">
+          <div class="benefit-icon" aria-hidden="true" style="font-size:0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          </div>
+          <div><h3 class="benefit-title">Historial completo</h3><p class="benefit-desc">Revisa todos tus pedidos y repite tus favoritos con un clic.</p></div>
+        </li>
+        <li class="benefit-card reveal">
+          <div class="benefit-icon" aria-hidden="true" style="font-size:0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <div><h3 class="benefit-title">Acceso exclusivo TSJ</h3><p class="benefit-desc">Solo la comunidad del Tecnológico puede entrar.</p></div>
+        </li>
+        <li class="benefit-card reveal">
+          <div class="benefit-icon" aria-hidden="true" style="font-size:0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <div><h3 class="benefit-title">Comprobantes digitales</h3><p class="benefit-desc">Descarga tu recibo al instante desde la plataforma.</p></div>
+        </li>
+        <li class="benefit-card reveal">
+          <div class="benefit-icon" aria-hidden="true" style="font-size:0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <div><h3 class="benefit-title">Panel para restaurantes</h3><p class="benefit-desc">Dashboard con ventas, pedidos y gestión de menú.</p></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══ PARA RESTAURANTES + REGISTRO ════════════ -->
+  <section class="for-restaurants" id="registro" aria-labelledby="forrest-title">
+    <div class="container">
+      <div class="forrest-grid">
+        <div class="forrest-left reveal">
+          <span class="section-tag">¿Tienes un negocio en el TSJ?</span>
+          <h2 id="forrest-title" class="section-title">Digitaliza tu negocio<br>y vende más</h2>
+          <p class="section-sub">Únete, gestiona pedidos en tiempo real y aumenta tus ingresos.</p>
+          <ul class="perks-list" aria-label="Ventajas para restaurantes">
+            <li class="perk-item">
+              <span class="perk-icon" aria-hidden="true" style="font-size:0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              </span>
+              <p>Dashboard con estadísticas de ventas en tiempo real</p>
+            </li>
+            <li class="perk-item">
+              <span class="perk-icon" aria-hidden="true" style="font-size:0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+              </span>
+              <p>Gestiona tu menú, precios y disponibilidad fácilmente</p>
+            </li>
+            <li class="perk-item">
+              <span class="perk-icon" aria-hidden="true" style="font-size:0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+              </span>
+              <p>Recibe notificaciones de nuevos pedidos al instante</p>
+            </li>
+            <li class="perk-item">
+              <span class="perk-icon" aria-hidden="true" style="font-size:0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </span>
+              <p>Control total de pagos y comprobantes digitales</p>
+            </li>
+          </ul>
+        </div>
+        <div class="forrest-right reveal">
+          <article class="register-card" aria-labelledby="register-title">
+            <h3 id="register-title" class="register-title">¿Listo para empezar?</h3>
+            <p class="register-sub">Crea tu cuenta gratis y haz tu primer pedido ahora.</p>
+            <form class="register-form" id="register-form" novalidate aria-label="Formulario de registro">
+              <div class="form-group">
+                <label for="reg-nombre" class="form-label">Nombre completo <span style="color:#f87171">*</span></label>
+                <input type="text" id="reg-nombre" name="nombre" class="form-input" placeholder="Ej: Juan García" autocomplete="name" required aria-required="true" />
+                <span class="field-error" role="alert" aria-live="polite"></span>
+              </div>
+              <div class="form-group">
+                <label for="reg-email" class="form-label">Correo institucional <span style="color:#f87171">*</span></label>
+                <input type="email" id="reg-email" name="email" class="form-input" placeholder="usuario@zapopan.tecmm.edu.mx" autocomplete="email" required aria-required="true" />
+                <span class="field-error" role="alert" aria-live="polite"></span>
+              </div>
+              <div class="form-group">
+                <label for="reg-password" class="form-label">Contraseña <span style="color:#f87171">*</span></label>
+                <input type="password" id="reg-password" name="password" class="form-input" placeholder="Mínimo 6 caracteres" autocomplete="new-password" minlength="6" required aria-required="true" />
+                <span class="field-error" role="alert" aria-live="polite"></span>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full btn-lg">Crear mi cuenta gratis →</button>
+              <p class="register-note">¿Eres restaurante o admin? <a href="mailto:soporte@zapopan.tecmm.edu.mx" class="link">Contacta a soporte</a></p>
+            </form>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TESTIMONIOS ══════════════════════════════ -->
+  <section class="testimonials" id="testimonios" aria-labelledby="testi-title">
+    <div class="container">
+      <header class="section-header reveal">
+        <span class="section-tag">Lo que dice la comunidad</span>
+        <h2 id="testi-title" class="section-title">El TSJ ya lo usa</h2>
+      </header>
+      <ul class="testimonials-grid" aria-label="Testimonios">
+        <li class="testi-card reveal">
+          <div class="testi-stars" aria-label="5 estrellas">★★★★★</div>
+          <blockquote class="testi-quote"><p>"Ya no pierdo mi descanso en la fila. Pido desde clase y cuando salgo está listo. Una chulada de plataforma."</p></blockquote>
+          <footer class="testi-author">
+            <div class="testi-avatar avatar-initial av-1" aria-hidden="true">JP</div>
+            <div><cite class="testi-name">Juan Pérez</cite><span class="testi-role">Estudiante, 6to semestre</span></div>
+          </footer>
+        </li>
+        <li class="testi-card reveal">
+          <div class="testi-stars" aria-label="5 estrellas">★★★★★</div>
+          <blockquote class="testi-quote"><p>"Mis ventas subieron desde que me uní. El dashboard me ayuda a controlar todo sin complicaciones."</p></blockquote>
+          <footer class="testi-author">
+            <div class="testi-avatar avatar-initial av-2" aria-hidden="true">MG</div>
+            <div><cite class="testi-name">María González</cite><span class="testi-role">Restaurante — Tacos El Compa</span></div>
+          </footer>
+        </li>
+        <li class="testi-card reveal">
+          <div class="testi-stars" aria-label="5 estrellas">★★★★★</div>
+          <blockquote class="testi-quote"><p>"Pagar con el cel, historial de pedidos, comprobantes... todo en un lugar. Ya no hay excusas."</p></blockquote>
+          <footer class="testi-author">
+            <div class="testi-avatar avatar-initial av-3" aria-hidden="true">CR</div>
+            <div><cite class="testi-name">Carlos Ramos</cite><span class="testi-role">Estudiante, Ing. en TI</span></div>
+          </footer>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══ FAQ ══════════════════════════════════════ -->
+  <section class="faq" id="faq" aria-labelledby="faq-title">
+    <div class="container">
+      <header class="section-header reveal">
+        <span class="section-tag">Preguntas frecuentes</span>
+        <h2 id="faq-title" class="section-title">Todo lo que quieres saber</h2>
+      </header>
+      <dl class="faq-list" aria-label="FAQ">
+        <div class="faq-item reveal"><dt class="faq-question"><button type="button" class="faq-toggle" aria-expanded="false" aria-controls="faq-a1">¿Necesito un correo institucional? <span class="faq-icon" aria-hidden="true">+</span></button></dt><dd id="faq-a1" class="faq-answer" hidden>Sí. Para mantener la plataforma exclusiva el registro requiere un correo <strong>@zapopan.tecmm.edu.mx</strong> activo.</dd></div>
+        <div class="faq-item reveal"><dt class="faq-question"><button type="button" class="faq-toggle" aria-expanded="false" aria-controls="faq-a2">¿Cómo pago mis pedidos? <span class="faq-icon" aria-hidden="true">+</span></button></dt><dd id="faq-a2" class="faq-answer" hidden>El pago es 100% en línea y seguro con Mercado Pago o en efectivo en mostrador. Recibirás un comprobante digital al instante.</dd></div>
+        <div class="faq-item reveal"><dt class="faq-question"><button type="button" class="faq-toggle" aria-expanded="false" aria-controls="faq-a3">¿Puedo ver el estado de mi pedido? <span class="faq-icon" aria-hidden="true">+</span></button></dt><dd id="faq-a3" class="faq-answer" hidden>Sí. Desde tu panel de alumno puedes ver historial y estado de cada pedido en tiempo real.</dd></div>
+        <div class="faq-item reveal"><dt class="faq-question"><button type="button" class="faq-toggle" aria-expanded="false" aria-controls="faq-a4">¿Cómo registro mi restaurante? <span class="faq-icon" aria-hidden="true">+</span></button></dt><dd id="faq-a4" class="faq-answer" hidden>Contacta al administrador del plantel. Los restaurantes tienen rol especial con dashboard y menú.</dd></div>
+        <div class="faq-item reveal"><dt class="faq-question"><button type="button" class="faq-toggle" aria-expanded="false" aria-controls="faq-a5">¿La plataforma tiene costo? <span class="faq-icon" aria-hidden="true">+</span></button></dt><dd id="faq-a5" class="faq-answer" hidden>No. El uso es gratuito para estudiantes y restaurantes por ahora.</dd></div>
+        <div class="faq-item reveal"><dt class="faq-question"><button type="button" class="faq-toggle" aria-expanded="false" aria-controls="faq-a6">¿En qué dispositivos funciona? <span class="faq-icon" aria-hidden="true">+</span></button></dt><dd id="faq-a6" class="faq-answer" hidden>En cualquier navegador moderno: celular, tablet o computadora. Sin instalar nada.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ══ CTA FINAL ════════════════════════════════ -->
+  <section class="final-cta" aria-labelledby="cta-title">
+    <div class="container cta-inner">
+      <h2 id="cta-title" class="cta-title">¿A qué esperas?<br><span>El hambre no espera.</span></h2>
+      <p class="cta-sub">Únete gratis hoy y haz tu primer pedido en menos de 2 minutos.</p>
+      <a href="../login.html" class="btn btn-primary btn-xl">Crear mi cuenta gratis →</a>
+      <p class="cta-note">¿Eres restaurante o admin? <a href="mailto:soporte@zapopan.tecmm.edu.mx" class="link">soporte@zapopan.tecmm.edu.mx</a></p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══ FOOTER ════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="logo-foodis">
+        <span class="f-orange">Foodi</span><span class="f-green">s</span>
+      </span>
+      <span class="logo-sub">TSJ Zapopan</span>
+    </div>
+    <nav aria-label="Footer">
+      <ul class="footer-links" role="list">
+        <li><a href="#inicio"        class="footer-link">Inicio</a></li>
+        <li><a href="#como-funciona" class="footer-link">Cómo funciona</a></li>
+        <li><a href="#restaurantes"  class="footer-link">Restaurantes</a></li>
+        <li><a href="#faq"           class="footer-link">Preguntas frecuentes</a></li>
+        <li><a href="../login.html"  class="footer-link">Acceder</a></li>
+      </ul>
+    </nav>
+    <p class="footer-copy"><small>© 2025 Foodis TSJ Zapopan — Proyecto académico 6to semestre · Tecnológico Superior de Jalisco</small></p>
+  </div>
+</footer>
+
+<script src="js/script.js" defer></script>
+</body>
+</html>

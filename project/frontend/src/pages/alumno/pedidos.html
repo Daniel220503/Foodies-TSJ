@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>TSJ Foodies — Mis Pedidos</title>
+ <link rel="stylesheet" href="../../styles/main.css" />
+</head>
+<body>
+
+<nav class="navbar">
+ <div class="navbar-brand">TSJ <span>FOODIES</span></div>
+ <div class="navbar-nav" id="navbar-nav">
+ <a class="nav-link" href="inicio.html">Inicio</a>
+ <a class="nav-link active" href="pedidos.html">Mis Pedidos</a>
+ </div>
+ <div class="nav-user">
+ <span><strong id="user-name">...</strong></span>
+ <button class="btn-logout" onclick="Auth.logout()">Salir</button>
+ </div>
+ <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú">
+ <span></span><span></span><span></span>
+ </button>
+</nav>
+
+<div class="container">
+ <div class="page-header">
+ <h1>Mis Pedidos</h1>
+ </div>
+
+ <!-- Filtros por estado -->
+ <div class="tabs" id="filtros">
+ <button class="tab-btn active" onclick="filtrar(null,this)">Todos</button>
+ <button class="tab-btn" onclick="filtrar('pendiente',this)">Pendientes</button>
+ <button class="tab-btn" onclick="filtrar('en_preparacion',this)">En preparación</button>
+ <button class="tab-btn" onclick="filtrar('listo',this)">Listos</button>
+ <button class="tab-btn" onclick="filtrar('entregado',this)">Entregados</button>
+ </div>
+
+ <div id="pedidos-list"></div>
+</div>
+
+<!-- Modal comprobante -->
+<div id="comp-modal" class="modal-overlay hidden">
+ <div class="modal">
+ <div class="modal-header">
+ <h3>Comprobante</h3>
+ <button class="modal-close" onclick="document.getElementById('comp-modal').classList.add('hidden')"></button>
+ </div>
+ <div class="modal-body" id="comp-body"></div>
+ <div class="modal-footer">
+ <button class="btn btn-primary" onclick="document.getElementById('comp-modal').classList.add('hidden')">Cerrar</button>
+ </div>
+ </div>
+</div>
+
+<script src="../../services/api.js"></script>
+<script>
+ let todosPedidos = [];
+ const user = requireAuth('cliente');
+ if (user) {
+ document.getElementById('user-name').textContent = user.nombre.split(' ')[0];
+ cargarPedidos();
+ }
+
+ async function cargarPedidos() {
+ const list = document.getElementById('pedidos-list');
+ list.innerHTML = '<div class="spinner"></div>';
+ try {
+ todosPedidos = await Pedidos.misPedidos();
+ renderPedidos(todosPedidos);
+ } catch(e) {
+ list.innerHTML = `<p style="color:var(--danger)">${e.message}</p>`;
+ }
+ }
+
+ function filtrar(estado, btn) {
+ document.querySelectorAll('#filtros .tab-btn').forEach(b => b.classList.remove('active'));
+ btn.classList.add('active');
+ const filtrados = estado ? todosPedidos.filter(p => p.estado === estado) : todosPedidos;
+ renderPedidos(filtrados);
+ }
+
+ function renderPedidos(pedidos) {
+ const list = document.getElementById('pedidos-list');
+ if (!pedidos.length) {
+ list.innerHTML = `<div class="empty-state"><div class="icon"></div>
+ <h3>No hay pedidos</h3><p>Tus pedidos aparecerán aquí</p></div>`;
+ return;
+ }
+ list.innerHTML = pedidos.map(p => `
+ <div class="card" style="margin-bottom:1rem;border-left:4px solid ${
+ {pendiente:'#f59e0b',en_preparacion:'#3b82f6',listo:'#10b981',entregado:'#6b7280',cancelado:'#ef4444'}[p.estado]||'var(--primary)'}">
+ <div class="card-body">
+ <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+ <div>
+ <strong>#${p.id}</strong>
+ <span style="color:var(--gray);font-size:.88rem"> — ${esc(p.restaurante_nombre)}</span>
+ </div>
+ <span class="badge badge-${p.estado}">${estadoLabel(p.estado)}</span>
+ </div>
+ <div style="font-size:.85rem;color:var(--gray);margin-bottom:.4rem">
+ ${p.items.map(i => `${esc(i.producto_nombre)} x${i.cantidad}`).join(' · ')}
+ </div>
+ ${progresoPedido(p.estado)}
+ <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.4rem">
+ <span style="font-weight:700;color:var(--primary)">$${parseFloat(p.total).toFixed(2)}</span>
+ <span style="font-size:.78rem;color:var(--gray)">${new Date(p.created_at).toLocaleString('es-MX')}</span>
+ </div>
+ ${p.pago_estado === 'completado' ? `<div style="margin-top:.7rem">
+ <button class="btn btn-secondary btn-sm" onclick="verComprobante(${p.id})">Ver comprobante</button>
+ </div>` : ''}
+ </div>
+ </div>`).join('');
+ }
+
+ async function verComprobante(pedidoId) {
+ try {
+ const data = await Comprobantes.get(pedidoId);
+ const c = data.contenido_json || data.contenido;
+ document.getElementById('comp-body').innerHTML = `
+ <div class="comprobante">
+ <div class="comprobante-header">
+ <div style="font-size:2rem"></div>
+ <div class="comprobante-folio">${c.folio}</div>
+ <div style="font-size:.85rem;color:var(--gray)">${new Date(c.fecha).toLocaleString('es-MX')}</div>
+ </div>
+ <div class="comprobante-row"><span>Restaurante</span><span>${esc(c.restaurante)}</span></div>
+ <div class="comprobante-row"><span>Método de pago</span><span>${c.metodo_pago}</span></div>
+ ${c.items.map(i=>`
+ <div class="comprobante-row">
+ <span>${esc(i.nombre)} x${i.cantidad}</span>
+ <span>$${parseFloat(i.subtotal).toFixed(2)}</span>
+ </div>`).join('')}
+ <div class="comprobante-row comprobante-total">
+ <span>TOTAL</span><span>$${parseFloat(c.total).toFixed(2)}</span>
+ </div>
+ </div>`;
+ document.getElementById('comp-modal').classList.remove('hidden');
+ } catch(e) { toast(e.message,'error'); }
+ }
+
+ function estadoLabel(e) {
+ return { pendiente:'Pendiente', en_preparacion:'En preparación',
+ listo:'Listo', entregado:'Entregado', cancelado:'Cancelado' }[e] || e;
+ }
+
+ function progresoPedido(estado) {
+ if (estado === 'cancelado') {
+ return `<div style="margin:.6rem 0;padding:.35rem .7rem;background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;font-size:.8rem;color:#991b1b;font-weight:600">Pedido cancelado</div>`;
+ }
+ const steps = ['pendiente','en_preparacion','listo','entregado'];
+ const labels = ['Pendiente','En preparación','Listo','Entregado'];
+ const colors = ['#f59e0b','#3b82f6','#10b981','#059669'];
+ const idx = steps.indexOf(estado);
+ let html = '<div style="display:flex;align-items:center;margin:.8rem 0 .5rem;gap:0">';
+ steps.forEach((s, i) => {
+ const done = i <= idx;
+ const current = i === idx;
+ html += `<div title="${labels[i]}" style="width:${current?'12px':'9px'};height:${current?'12px':'9px'};border-radius:50%;flex-shrink:0;background:${done?colors[i]:'var(--border)'};${current?'box-shadow:0 0 0 3px '+colors[i]+'44':''}"></div>`;
+ if (i < steps.length - 1)
+ html += `<div style="flex:1;height:2px;background:${i < idx ? colors[i] : 'var(--border)'}"></div>`;
+ });
+ html += '</div>';
+ html += `<div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--gray);margin-bottom:.4rem">
+ ${labels.map((l, i) => `<span style="color:${i<=idx?colors[i]:'var(--gray)'};font-weight:${i===idx?'700':'400'}">${l}</span>`).join('')}
+ </div>`;
+ return html;
+ }
+
+ function esc(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+ document.getElementById('nav-toggle').addEventListener('click', function(){
+  document.getElementById('navbar-nav').classList.toggle('open');
+ });
+</script>
+</body>
+</html>

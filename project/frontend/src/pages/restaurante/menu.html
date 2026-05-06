@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>TSJ Foodies — Mi Menú</title>
+ <link rel="stylesheet" href="../../styles/main.css" />
+</head>
+<body>
+
+<nav class="navbar">
+ <div class="navbar-brand">TSJ <span>FOODIES</span></div>
+ <div class="navbar-nav" id="navbar-nav">
+ <a class="nav-link" href="dashboard.html">Inicio</a>
+ <a class="nav-link active" href="menu.html">Menú</a>
+ <a class="nav-link" href="pagos.html">Pagos</a>
+ <a class="nav-link" href="ventas.html">Ventas</a>
+ </div>
+ <div class="nav-user">
+ <span><strong id="rest-name">...</strong></span>
+ <button class="btn-logout" onclick="Auth.logout()">Salir</button>
+ </div>
+ <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú">
+ <span></span><span></span><span></span>
+ </button>
+</nav>
+
+<div class="container">
+ <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
+ <div class="page-header" style="margin:0">
+ <h1>Gestión de Menú</h1>
+ </div>
+ <div style="display:flex;gap:.7rem">
+ <button class="btn btn-secondary" onclick="abrirModalCategoria()">+ Agregar Categoría</button>
+ <button class="btn btn-primary" onclick="abrirModalProducto()">+ Agregar Producto</button>
+ </div>
+ </div>
+
+ <!-- Buscador -->
+ <div class="search-bar">
+ <span></span>
+ <input id="search-input" type="text" placeholder="Buscar producto..." oninput="filtrarProductos()" />
+ </div>
+
+ <!-- Tabs de categorías -->
+ <div class="tabs" id="categorias-tabs"></div>
+
+ <!-- Grid de productos -->
+ <div id="productos-grid" class="grid-3"><div class="spinner"></div></div>
+</div>
+
+<!-- Modal: Agregar / Editar Producto -->
+<div id="producto-modal" class="modal-overlay hidden">
+ <div class="modal">
+ <div class="modal-header">
+ <h3 id="producto-modal-title">Nuevo Producto</h3>
+ <button class="modal-close" onclick="closeProductoModal()"></button>
+ </div>
+ <div class="modal-body">
+ <input type="hidden" id="prod-id" />
+ <div class="form-group">
+ <label class="form-label">Nombre *</label>
+ <input id="prod-nombre" type="text" class="form-control" placeholder="Ej: Tacos de Pastor" />
+ </div>
+ <div class="form-group">
+ <label class="form-label">Descripción</label>
+ <textarea id="prod-desc" class="form-control" rows="2" placeholder="Descripción del producto..."></textarea>
+ </div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+ <div class="form-group">
+ <label class="form-label">Precio (MXN) *</label>
+ <input id="prod-precio" type="number" min="0" step="0.50" class="form-control" placeholder="0.00" />
+ </div>
+ <div class="form-group">
+ <label class="form-label">Tiempo estimado (min)</label>
+ <input id="prod-tiempo" type="number" min="1" max="120" class="form-control" placeholder="15" />
+ </div>
+ </div>
+ <div class="form-group">
+ <label class="form-label">Categoría</label>
+ <select id="prod-categoria" class="form-control">
+ <option value="">— Sin categoría —</option>
+ </select>
+ </div>
+ <div class="form-group">
+ <label class="form-label">URL de imagen (opcional)</label>
+ <input id="prod-imagen" type="url" class="form-control" placeholder="https://..." />
+ </div>
+ <div class="form-group" id="prod-disponible-group" style="display:none">
+ <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer">
+ <input type="checkbox" id="prod-disponible" checked />
+ <span class="form-label" style="margin:0">Disponible para pedir</span>
+ </label>
+ </div>
+ </div>
+ <div class="modal-footer">
+ <button class="btn btn-secondary" onclick="closeProductoModal()">Cancelar</button>
+ <button class="btn btn-primary" id="btn-guardar-prod" onclick="guardarProducto()">Guardar</button>
+ </div>
+ </div>
+</div>
+
+<!-- Modal: Categoría -->
+<div id="categoria-modal" class="modal-overlay hidden">
+ <div class="modal" style="max-width:380px">
+ <div class="modal-header">
+ <h3>Nueva Categoría</h3>
+ <button class="modal-close" onclick="closeCategoriaModal()"></button>
+ </div>
+ <div class="modal-body">
+ <div class="form-group">
+ <label class="form-label">Nombre de la categoría *</label>
+ <input id="cat-nombre" type="text" class="form-control" placeholder="Ej: Bebidas, Platos, Postres" />
+ </div>
+ </div>
+ <div class="modal-footer">
+ <button class="btn btn-secondary" onclick="closeCategoriaModal()">Cancelar</button>
+ <button class="btn btn-primary" onclick="guardarCategoria()">Crear</button>
+ </div>
+ </div>
+</div>
+
+<!-- Modal: Confirmar eliminación -->
+<div id="delete-modal" class="modal-overlay hidden">
+ <div class="modal" style="max-width:360px">
+ <div class="modal-header">
+ <h3>Confirmar eliminación</h3>
+ <button class="modal-close" onclick="closeDeleteModal()"></button>
+ </div>
+ <div class="modal-body">
+ <p>¿Seguro que deseas eliminar <strong id="delete-nombre"></strong>?</p>
+ <p style="font-size:.85rem;color:var(--gray);margin-top:.5rem">Esta acción no se puede deshacer.</p>
+ </div>
+ <div class="modal-footer">
+ <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancelar</button>
+ <button class="btn btn-danger" id="btn-confirm-delete" onclick="confirmarEliminar()">Eliminar</button>
+ </div>
+ </div>
+</div>
+
+<script src="../../services/api.js"></script>
+<script>
+ let user, menuData = { categorias: [], productos: [] };
+ let productoAEliminar = null;
+ let filtroCategoria = null;
+
+ user = requireAuth('restaurante');
+ if (user) {
+ document.getElementById('rest-name').textContent = user.nombre.split(' ')[0];
+ cargarMenu();
+ }
+
+ async function cargarMenu() {
+ const rid = user.restaurante_id;
+ if (!rid) { toast('Sin restaurante asociado','error'); return; }
+ try {
+ menuData = await Restaurantes.getMenu(rid);
+ renderCategorias();
+ renderProductos(menuData.productos);
+ popularSelectCategorias();
+ } catch(e) { toast(e.message,'error'); }
+ }
+
+ function renderCategorias() {
+ const tabs = document.getElementById('categorias-tabs');
+ tabs.innerHTML = `<button class="tab-btn active" onclick="filtrar(null,this)">Todos (${menuData.productos.length})</button>` +
+ menuData.categorias.map(c => {
+ const cnt = menuData.productos.filter(p => p.categoria_id === c.id).length;
+ return `<button class="tab-btn" onclick="filtrar(${c.id},this)">${esc(c.nombre)} (${cnt})</button>`;
+ }).join('') +
+ `<button class="tab-btn" style="color:var(--danger)" onclick="confirmarEliminarCategoria()"> Gestionar</button>`;
+ }
+
+ function filtrar(catId, btn) {
+ filtroCategoria = catId;
+ document.querySelectorAll('#categorias-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+ btn.classList.add('active');
+ const prods = catId ? menuData.productos.filter(p => p.categoria_id === catId) : menuData.productos;
+ renderProductos(prods);
+ }
+
+ function filtrarProductos() {
+ const q = document.getElementById('search-input').value.toLowerCase();
+ let prods = filtroCategoria ? menuData.productos.filter(p => p.categoria_id === filtroCategoria) : menuData.productos;
+ prods = prods.filter(p => p.nombre.toLowerCase().includes(q) || (p.descripcion||'').toLowerCase().includes(q));
+ renderProductos(prods);
+ }
+
+ function renderProductos(productos) {
+ const grid = document.getElementById('productos-grid');
+ if (!productos.length) {
+ grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+ <div class="icon"></div><h3>Sin productos</h3>
+ <p>Agrega tu primer producto con el botón de arriba</p></div>`;
+ return;
+ }
+ grid.innerHTML = productos.map(p => {
+ const cat = menuData.categorias.find(c => c.id === p.categoria_id);
+ return `
+ <div class="card" style="${!p.disponible ? 'opacity:.6' : ''}">
+ ${p.imagen_url
+ ? `<img src="${esc(p.imagen_url)}" class="card-img" onerror="this.parentNode.children[0].style.display='none'" />`
+ : `<div class="card-img-placeholder"></div>`}
+ <div class="card-body">
+ ${!p.disponible ? '<span class="badge badge-cancelado" style="margin-bottom:.4rem">No disponible</span>' : ''}
+ ${cat ? `<span class="badge badge-cliente" style="margin-bottom:.4rem;font-size:.75rem">${esc(cat.nombre)}</span>` : ''}
+ <div class="card-title">${esc(p.nombre)}</div>
+ <div class="card-desc">${esc(p.descripcion||'')}</div>
+ <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem">
+ <span class="card-price">$${parseFloat(p.precio).toFixed(2)}</span>
+ <span style="font-size:.8rem;color:var(--gray)"> ${p.tiempo_estimado} min</span>
+ </div>
+ <div style="display:flex;gap:.5rem;margin-top:.8rem">
+ <button class="btn btn-secondary btn-sm" style="flex:1" onclick="abrirEditarProducto(${p.id})"> Editar</button>
+ <button class="btn btn-danger btn-sm" onclick="pedirEliminar(${p.id},'${esc(p.nombre).replace(/'/g,"\\'")}')"></button>
+ </div>
+ </div>
+ </div>`;
+ }).join('');
+ }
+
+ function popularSelectCategorias() {
+ const sel = document.getElementById('prod-categoria');
+ sel.innerHTML = '<option value="">— Sin categoría —</option>' +
+ menuData.categorias.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+ }
+
+ // ── Producto CRUD ────────────────────────────
+ function abrirModalProducto() {
+ document.getElementById('producto-modal-title').textContent = 'Nuevo Producto';
+ document.getElementById('prod-id').value = '';
+ document.getElementById('prod-nombre').value = '';
+ document.getElementById('prod-desc').value = '';
+ document.getElementById('prod-precio').value = '';
+ document.getElementById('prod-tiempo').value = '15';
+ document.getElementById('prod-categoria').value = '';
+ document.getElementById('prod-imagen').value = '';
+ document.getElementById('prod-disponible-group').style.display = 'none';
+ document.getElementById('producto-modal').classList.remove('hidden');
+ }
+
+ function abrirEditarProducto(id) {
+ const p = menuData.productos.find(x => x.id === id);
+ if (!p) return;
+ document.getElementById('producto-modal-title').textContent = 'Editar Producto';
+ document.getElementById('prod-id').value = p.id;
+ document.getElementById('prod-nombre').value = p.nombre;
+ document.getElementById('prod-desc').value = p.descripcion || '';
+ document.getElementById('prod-precio').value = p.precio;
+ document.getElementById('prod-tiempo').value = p.tiempo_estimado;
+ document.getElementById('prod-categoria').value = p.categoria_id || '';
+ document.getElementById('prod-imagen').value = p.imagen_url || '';
+ document.getElementById('prod-disponible').checked = p.disponible;
+ document.getElementById('prod-disponible-group').style.display = 'block';
+ document.getElementById('producto-modal').classList.remove('hidden');
+ }
+
+ function closeProductoModal() { document.getElementById('producto-modal').classList.add('hidden'); }
+
+ async function guardarProducto() {
+ const id = document.getElementById('prod-id').value;
+ const nombre = document.getElementById('prod-nombre').value.trim();
+ const precio = document.getElementById('prod-precio').value;
+ if (!nombre || !precio) { toast('Nombre y precio son obligatorios','warning'); return; }
+ const datos = {
+ nombre,
+ descripcion: document.getElementById('prod-desc').value,
+ precio: parseFloat(precio),
+ tiempo_estimado:parseInt(document.getElementById('prod-tiempo').value) || 15,
+ categoria_id: document.getElementById('prod-categoria').value || null,
+ imagen_url: document.getElementById('prod-imagen').value || null,
+ disponible: document.getElementById('prod-disponible').checked
+ };
+ const btn = document.getElementById('btn-guardar-prod');
+ btn.disabled = true; btn.textContent = 'Guardando...';
+ try {
+ if (id) { await Productos.update(id, datos); toast('Producto actualizado','success'); }
+ else { await Productos.create(datos); toast('Producto creado','success'); }
+ closeProductoModal();
+ cargarMenu();
+ } catch(e) { toast(e.message,'error'); }
+ finally { btn.disabled = false; btn.textContent = 'Guardar'; }
+ }
+
+ function pedirEliminar(id, nombre) {
+ productoAEliminar = id;
+ document.getElementById('delete-nombre').textContent = nombre;
+ document.getElementById('delete-modal').classList.remove('hidden');
+ }
+
+ function closeDeleteModal() {
+ document.getElementById('delete-modal').classList.add('hidden');
+ productoAEliminar = null;
+ }
+
+ async function confirmarEliminar() {
+ if (!productoAEliminar) return;
+ try {
+ await Productos.remove(productoAEliminar);
+ toast('Producto eliminado','success');
+ closeDeleteModal();
+ cargarMenu();
+ } catch(e) { toast(e.message,'error'); }
+ }
+
+ // ── Categoría CRUD ──────────────────────────
+ function abrirModalCategoria() {
+ document.getElementById('cat-nombre').value = '';
+ document.getElementById('categoria-modal').classList.remove('hidden');
+ }
+ function closeCategoriaModal() { document.getElementById('categoria-modal').classList.add('hidden'); }
+
+ async function guardarCategoria() {
+ const nombre = document.getElementById('cat-nombre').value.trim();
+ if (!nombre) { toast('Ingresa un nombre','warning'); return; }
+ try {
+ await Categorias.create({ nombre });
+ toast('Categoría creada','success');
+ closeCategoriaModal();
+ cargarMenu();
+ } catch(e) { toast(e.message,'error'); }
+ }
+
+ async function confirmarEliminarCategoria() {
+ if (!menuData.categorias.length) { toast('No hay categorías para eliminar','warning'); return; }
+ const nombres = menuData.categorias.map((c,i) => `${i+1}. ${c.nombre}`).join('\n');
+ const num = prompt(`¿Qué categoría eliminar?\n${nombres}\n\nEscribe el número:`);
+ if (!num) return;
+ const cat = menuData.categorias[parseInt(num)-1];
+ if (!cat) { toast('Número inválido','warning'); return; }
+ if (!confirm(`¿Eliminar la categoría "${cat.nombre}"?`)) return;
+ try {
+ await Categorias.remove(cat.id);
+ toast('Categoría eliminada','success');
+ cargarMenu();
+ } catch(e) { toast(e.message,'error'); }
+ }
+
+ function esc(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+ document.getElementById('nav-toggle').addEventListener('click', function(){
+  document.getElementById('navbar-nav').classList.toggle('open');
+ });
+</script>
+</body>
+</html>
