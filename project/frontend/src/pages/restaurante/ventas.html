@@ -23,7 +23,7 @@
  </button>
 </nav>
 <div class="container">
- <div class="page-header"><h1> Resumen de Ventas</h1><p>Estadísticas de tu restaurante</p></div>
+ <div class="page-header"><h1>Resumen de Ventas</h1></div>
  <div class="stats-grid" id="stats-grid"><div class="spinner"></div></div>
  <div class="grid-2" style="margin-top:1.5rem">
  <div class="card"><div class="card-body">
@@ -53,10 +53,10 @@
 
  // Stats cards
  document.getElementById('stats-grid').innerHTML = `
- <div class="stat-card"><div class="stat-icon"></div><div class="stat-value">$${totalVentas.toFixed(2)}</div><div class="stat-label">Ventas totales</div></div>
- <div class="stat-card"><div class="stat-icon"></div><div class="stat-value">${totalPedidos}</div><div class="stat-label">Total pedidos</div></div>
- <div class="stat-card"><div class="stat-icon"></div><div class="stat-value">${entregados.length}</div><div class="stat-label">Entregados</div></div>
- <div class="stat-card"><div class="stat-icon"></div><div class="stat-value">$${ticket.toFixed(2)}</div><div class="stat-label">Ticket promedio</div></div>`;
+ <div class="stat-card" style="border-top:3px solid var(--primary)"><div class="stat-value">$${totalVentas.toFixed(2)}</div><div class="stat-label">Ventas totales</div></div>
+ <div class="stat-card" style="border-top:3px solid var(--info)"><div class="stat-value">${totalPedidos}</div><div class="stat-label">Total pedidos</div></div>
+ <div class="stat-card" style="border-top:3px solid var(--success)"><div class="stat-value">${entregados.length}</div><div class="stat-label">Entregados</div></div>
+ <div class="stat-card" style="border-top:3px solid var(--warning)"><div class="stat-value">$${ticket.toFixed(2)}</div><div class="stat-label">Ticket promedio</div></div>`;
 
  // Top productos
  const conteo = {};
@@ -77,7 +77,7 @@
 
  // Por estado
  const estados = ['pendiente','en_preparacion','listo','entregado','cancelado'];
- const labels = {pendiente:' Pendiente',en_preparacion:' En prep.',listo:' Listo',entregado:' Entregado',cancelado:' Cancelado'};
+ const labels = {pendiente:'Pendiente',en_preparacion:'En prep.',listo:'Listo',entregado:'Entregado',cancelado:'Cancelado'};
  const colors = {pendiente:'#f59e0b',en_preparacion:'#3b82f6',listo:'#10b981',entregado:'#059669',cancelado:'#ef4444'};
  document.getElementById('por-estado').innerHTML = estados.map(e=>{
  const cnt = pedidos.filter(p=>p.estado===e).length;

@@ -56,8 +56,11 @@ async function create(req, res) {
 async function misPedidos(req, res) {
   try {
     const { rows: pedidos } = await db.query(
-      `SELECT p.*, r.nombre as restaurante_nombre
-       FROM pedidos p JOIN restaurantes r ON p.restaurante_id=r.id
+      `SELECT p.*, r.nombre as restaurante_nombre,
+              pa.metodo as metodo_pago, pa.estado as pago_estado
+       FROM pedidos p
+       JOIN restaurantes r ON p.restaurante_id=r.id
+       LEFT JOIN pagos pa ON pa.pedido_id=p.id
        WHERE p.usuario_id=$1 ORDER BY p.created_at DESC`, [req.user.id]
     );
     for (const p of pedidos) {
@@ -77,8 +80,11 @@ async function pedidosRestaurante(req, res) {
   if (!rid) return res.status(400).json({ error: 'Sin restaurante asociado' });
   try {
     const { rows: pedidos } = await db.query(
-      `SELECT p.*, u.nombre as cliente_nombre
-       FROM pedidos p JOIN usuarios u ON p.usuario_id=u.id
+      `SELECT p.*, u.nombre as cliente_nombre,
+              pa.metodo as metodo_pago, pa.estado as pago_estado
+       FROM pedidos p
+       JOIN usuarios u ON p.usuario_id=u.id
+       LEFT JOIN pagos pa ON pa.pedido_id=p.id
        WHERE p.restaurante_id=$1 ORDER BY p.prioridad ASC, p.created_at ASC`, [rid]
     );
     for (const p of pedidos) {
@@ -97,10 +103,14 @@ async function updateEstado(req, res) {
   const { estado } = req.body;
   const validos = ['pendiente','en_preparacion','listo','entregado','cancelado'];
   if (!validos.includes(estado)) return res.status(400).json({ error: 'Estado inválido' });
+  const rid = req.user.restaurante_id;
+  if (!rid) return res.status(403).json({ error: 'Sin restaurante asociado' });
   try {
-    await db.query(
-      'UPDATE pedidos SET estado=$1, updated_at=NOW() WHERE id=$2', [estado, req.params.id]
+    const { rowCount } = await db.query(
+      'UPDATE pedidos SET estado=$1, updated_at=NOW() WHERE id=$2 AND restaurante_id=$3',
+      [estado, req.params.id, rid]
     );
+    if (!rowCount) return res.status(404).json({ error: 'Pedido no encontrado' });
     res.json({ message: 'Estado actualizado' });
   } catch { res.status(500).json({ error: 'Error' }); }
 }

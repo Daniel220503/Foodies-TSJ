@@ -32,8 +32,8 @@
       DATABASE_URL: postgres://postgres:123456@postgres:5432/tsj_foodies
       JWT_SECRET: tsj_foodies_secret_2024
       PORT: 5000
-      MP_ACCESS_TOKEN: ${MP_ACCESS_TOKEN}
-      FRONTEND_URL: http://localhost:8080
+      MP_ACCESS_TOKEN: ${MP_ACCESS_TOKEN:-}
+      FRONTEND_URL: http://localhost:3000
     depends_on:
       postgres:
         condition: service_healthy
@@ -43,7 +43,7 @@
     container_name: foodies_frontend
     restart: always
     ports:
-      - "8080:80"
+      - "3000:80"
     depends_on:
       - backend
 

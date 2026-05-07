@@ -16,6 +16,11 @@ function generarFolio() {
  * Devuelve checkout_url para redirigir al usuario al Checkout Pro.
  */
 async function crearPreferencia(req, res) {
+  // Verificar token de MP antes de tocar la DB
+  if (!process.env.MP_ACCESS_TOKEN) {
+    return res.status(503).json({ error: 'El pago con Mercado Pago no está disponible en este entorno. Usa el pago en efectivo.' });
+  }
+
   const { restaurante_id, items, notas } = req.body;
   const usuario_id = req.user.id;
 
@@ -26,7 +31,7 @@ async function crearPreferencia(req, res) {
   try {
     await client.query('BEGIN');
 
-    // Verificar que el restaurante está activo y aprobado
+    // Verificar restaurante activo y aprobado
     const { rows: rests } = await client.query(
       'SELECT id FROM restaurantes WHERE id=$1 AND activo=true AND aprobado=true',
       [restaurante_id]
@@ -46,44 +51,29 @@ async function crearPreferencia(req, res) {
       if (!prod) throw new Error('Uno de los productos ya no está disponible. Actualiza tu carrito e intenta de nuevo.');
       const subtotal = parseFloat(prod.precio) * item.cantidad;
       total += subtotal;
-      return {
-        producto_id: item.producto_id,
-        cantidad: item.cantidad,
-        nombre: prod.nombre,
-        precio: prod.precio,
-        subtotal
-      };
+      return { producto_id: item.producto_id, cantidad: item.cantidad, nombre: prod.nombre, precio: prod.precio, subtotal };
     });
 
     // Crear pedido
     const { rows: [pedido] } = await client.query(
-      `INSERT INTO pedidos (usuario_id, restaurante_id, total, notas)
-       VALUES ($1, $2, $3, $4) RETURNING id`,
+      `INSERT INTO pedidos (usuario_id, restaurante_id, total, notas) VALUES ($1,$2,$3,$4) RETURNING id`,
       [usuario_id, restaurante_id, total.toFixed(2), notas || null]
     );
 
-    // Insertar detalle de pedido
     for (const d of detalles) {
       await client.query(
-        `INSERT INTO detalle_pedido (pedido_id, producto_id, cantidad, precio_unitario, subtotal)
-         VALUES ($1, $2, $3, $4, $5)`,
-        [pedido.id, d.producto_id, d.cantidad,
-          parseFloat(d.precio).toFixed(2),
-          d.subtotal.toFixed(2)]
+        `INSERT INTO detalle_pedido (pedido_id, producto_id, cantidad, precio_unitario, subtotal) VALUES ($1,$2,$3,$4,$5)`,
+        [pedido.id, d.producto_id, d.cantidad, parseFloat(d.precio).toFixed(2), d.subtotal.toFixed(2)]
       );
     }
 
-    // Registrar pago pendiente
     await client.query(
-      `INSERT INTO pagos (pedido_id, metodo, monto, estado)
-       VALUES ($1, 'mercadopago', $2, 'pendiente')`,
+      `INSERT INTO pagos (pedido_id, metodo, monto, estado) VALUES ($1,'mercadopago',$2,'pendiente')`,
       [pedido.id, total.toFixed(2)]
     );
 
-    await client.query('COMMIT');
-
-    // Crear preferencia en Mercado Pago
-    const baseUrl = (process.env.FRONTEND_URL || 'http://localhost:8080').replace(/\/$/, '');
+    // Llamar a MP ANTES de hacer COMMIT para poder hacer ROLLBACK si falla
+    const baseUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
     const preference = new Preference(mpClient);
     const pref = await preference.create({
       body: {
@@ -104,16 +94,12 @@ async function crearPreferencia(req, res) {
       }
     });
 
-    // Guardar preference_id como referencia del pago
-    await db.query(
-      'UPDATE pagos SET referencia=$1 WHERE pedido_id=$2',
-      [pref.id, pedido.id]
-    );
+    // MP OK → guardar referencia y hacer COMMIT
+    await client.query('UPDATE pagos SET referencia=$1 WHERE pedido_id=$2', [pref.id, pedido.id]);
+    await client.query('COMMIT');
 
-    // En modo sandbox usa sandbox_init_point; en producción usa init_point
     const isTest = (process.env.MP_ACCESS_TOKEN || '').startsWith('TEST-');
     const checkout_url = isTest ? pref.sandbox_init_point : pref.init_point;
-
     res.json({ pedido_id: pedido.id, checkout_url });
 
   } catch (err) {

@@ -3,6 +3,9 @@ const router = require('express').Router();
 const { authMiddleware, requireRole } = require('../config/auth.middleware');
 const mp = require('../controllers/mp.controller');
 
+// Estado: ¿MP está configurado?
+router.get('/status', (req, res) => res.json({ disponible: !!process.env.MP_ACCESS_TOKEN }));
+
 // Crear preferencia: solo clientes autenticados
 router.post('/preferencia', authMiddleware, requireRole('cliente'), mp.crearPreferencia);
 

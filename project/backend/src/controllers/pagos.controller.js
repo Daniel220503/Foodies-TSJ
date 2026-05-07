@@ -20,9 +20,14 @@ async function procesarPago(req, res) {
     const pedido = pedidos[0];
 
     const { rows: pagos } = await client.query(
-      'SELECT id FROM pagos WHERE pedido_id=$1', [pedido_id]
+      "SELECT id, estado FROM pagos WHERE pedido_id=$1", [pedido_id]
     );
-    if (pagos.length > 0) throw new Error('El pedido ya tiene pago registrado');
+    const pagoExistente = pagos[0];
+    if (pagoExistente?.estado === 'completado') throw new Error('El pedido ya fue pagado');
+    // Si quedó un pago MP pendiente (usuario canceló en MP), reemplazarlo con efectivo
+    if (pagoExistente) {
+      await client.query('DELETE FROM pagos WHERE pedido_id=$1', [pedido_id]);
+    }
 
     const referencia = `REF-${Date.now()}`;
     await client.query(
@@ -78,7 +83,10 @@ async function procesarPago(req, res) {
 async function getComprobante(req, res) {
   try {
     const { rows } = await db.query(
-      'SELECT * FROM comprobantes WHERE pedido_id=$1', [req.params.pedidoId]
+      `SELECT c.* FROM comprobantes c
+       JOIN pedidos p ON c.pedido_id = p.id
+       WHERE c.pedido_id=$1 AND p.usuario_id=$2`,
+      [req.params.pedidoId, req.user.id]
     );
     if (!rows.length) return res.status(404).json({ error: 'Comprobante no encontrado' });
     res.json(rows[0]);

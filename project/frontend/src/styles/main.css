@@ -164,11 +164,17 @@ input, select, textarea { font-family: var(--font); }
   display: inline-block; padding: .25rem .7rem;
   border-radius: 20px; font-size: .78rem; font-weight: 600;
 }
-.badge-pendiente     { background: #fef9c3; color: #854d0e; }
-.badge-en_preparacion{ background: #dbeafe; color: #1e40af; }
-.badge-listo         { background: #d1fae5; color: #065f46; }
-.badge-entregado     { background: #f0fdf4; color: #166534; }
-.badge-cancelado     { background: #fee2e2; color: #991b1b; }
+.badge-pendiente     { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+.badge-en_preparacion{ background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+.badge-listo         { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; font-weight: 700; }
+.badge-entregado     { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+.badge-cancelado     { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+.pedido-estado-pendiente      { border-left-color: #f59e0b; }
+.pedido-estado-en_preparacion { border-left-color: #3b82f6; }
+.pedido-estado-listo          { border-left-color: #10b981; }
+.pedido-estado-entregado      { border-left-color: #6b7280; }
+.pedido-estado-cancelado      { border-left-color: #ef4444; }
 .badge-cliente       { background: #dbeafe; color: #1e40af; }
 .badge-restaurante   { background: #fef3c7; color: #92400e; }
 .badge-admin         { background: #ede9fe; color: #5b21b6; }

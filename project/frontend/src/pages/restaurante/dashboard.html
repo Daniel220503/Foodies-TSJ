@@ -5,6 +5,17 @@
  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
  <title>TSJ Foodies — Panel Restaurante</title>
  <link rel="stylesheet" href="../../styles/main.css" />
+ <style>
+ .estado-opt-btn {
+ display: flex; align-items: center; gap: .75rem;
+ width: 100%; padding: .7rem 1rem;
+ background: var(--light); border: 1.5px solid var(--border);
+ border-radius: 8px; font-size: .92rem; font-weight: 500;
+ cursor: pointer; transition: all .15s; text-align: left;
+ }
+ .estado-opt-btn:hover { background: #f1f5f9; border-color: #94a3b8; }
+ .estado-opt-btn.selected { background: var(--white); font-weight: 700; border-color: currentColor; box-shadow: 0 0 0 2px rgba(0,0,0,.08); }
+ </style>
 </head>
 <body>
 
@@ -70,16 +81,12 @@
  <div class="card-body">
  <h4 style="font-size:.9rem;margin-bottom:.8rem">Métodos de pago activos</h4>
  <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)">
- <div><div style="font-weight:600"> Tarjeta</div><div style="font-size:.78rem;color:var(--gray)">Visa, MC</div></div>
- <span style="background:var(--success);color:#fff;padding:.2rem .6rem;border-radius:20px;font-size:.78rem"> Activo</span>
- </div>
- <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)">
- <div><div style="font-weight:600"> PayPal</div><div style="font-size:.78rem;color:var(--gray)">Cuenta PayPal</div></div>
- <span style="background:var(--success);color:#fff;padding:.2rem .6rem;border-radius:20px;font-size:.78rem"> Activo</span>
+ <div><div style="font-weight:600">Mercado Pago</div><div style="font-size:.78rem;color:var(--gray)">Checkout Pro online</div></div>
+ <span style="background:var(--success);color:#fff;padding:.2rem .6rem;border-radius:20px;font-size:.78rem">Activo</span>
  </div>
  <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0">
- <div><div style="font-weight:600"> Efectivo</div><div style="font-size:.78rem;color:var(--gray)">Pago en mostrador</div></div>
- <span style="background:var(--success);color:#fff;padding:.2rem .6rem;border-radius:20px;font-size:.78rem"> Activo</span>
+ <div><div style="font-weight:600">Efectivo</div><div style="font-size:.78rem;color:var(--gray)">Pago en mostrador</div></div>
+ <span style="background:var(--success);color:#fff;padding:.2rem .6rem;border-radius:20px;font-size:.78rem">Activo</span>
  </div>
  </div>
  </div>
@@ -106,12 +113,24 @@
  <p style="margin-bottom:1rem">Pedido <strong id="modal-pedido-id"></strong></p>
  <div class="form-group">
  <label class="form-label">Nuevo estado</label>
- <select id="nuevo-estado" class="form-control">
- <option value="en_preparacion"> En preparación</option>
- <option value="listo"> Listo para entregar</option>
- <option value="entregado"> Entregado</option>
- <option value="cancelado"> Cancelado</option>
- </select>
+ <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.4rem">
+ <button type="button" class="estado-opt-btn" data-val="en_preparacion" style="border-left:4px solid #3b82f6">
+ <span style="width:10px;height:10px;border-radius:50%;background:#3b82f6;flex-shrink:0"></span>
+ En preparación
+ </button>
+ <button type="button" class="estado-opt-btn" data-val="listo" style="border-left:4px solid #10b981">
+ <span style="width:10px;height:10px;border-radius:50%;background:#10b981;flex-shrink:0"></span>
+ Listo para entregar
+ </button>
+ <button type="button" class="estado-opt-btn" data-val="entregado" style="border-left:4px solid #6b7280">
+ <span style="width:10px;height:10px;border-radius:50%;background:#6b7280;flex-shrink:0"></span>
+ Entregado
+ </button>
+ <button type="button" class="estado-opt-btn" data-val="cancelado" style="border-left:4px solid #ef4444">
+ <span style="width:10px;height:10px;border-radius:50%;background:#ef4444;flex-shrink:0"></span>
+ Cancelado
+ </button>
+ </div>
  </div>
  </div>
  <div class="modal-footer">
@@ -135,12 +154,16 @@
  }
 
  async function cargarTodo() {
- await Promise.all([cargarPedidos(), cargarTransacciones()]);
- }
-
- async function cargarPedidos() {
  try {
  const pedidos = await Pedidos.delRestaurante();
+ transaccionesData = pedidos;
+ renderPedidosActivos(pedidos);
+ renderTransacciones(pedidos);
+ calcularMetodos(pedidos);
+ } catch(e) { console.error(e); }
+ }
+
+ function renderPedidosActivos(pedidos) {
  const activos = pedidos.filter(p => !['entregado','cancelado'].includes(p.estado));
  document.getElementById('pedidos-count').textContent = activos.length;
  const list = document.getElementById('pedidos-list');
@@ -149,10 +172,8 @@
  <h3>Sin pedidos activos</h3><p>Los nuevos pedidos aparecerán aquí</p></div>`;
  return;
  }
- list.innerHTML = activos.map(p => {
- const cls = p.prioridad <= 2 ? 'prioridad-alta' : p.prioridad <= 5 ? 'prioridad-media' : '';
- return `
- <div class="pedido-card ${cls}">
+ list.innerHTML = activos.map(p => `
+ <div class="pedido-card pedido-estado-${p.estado}">
  <div class="pedido-card-header">
  <strong>#${p.id} — ${esc(p.cliente_nombre)}</strong>
  <span class="badge badge-${p.estado}">${estadoLabel(p.estado)}</span>
@@ -165,29 +186,22 @@
  <div class="pedido-actions">
  <button class="btn btn-primary btn-sm" onclick="abrirEstadoModal(${p.id})"> Estado</button>
  </div>
- </div>`;
- }).join('');
- } catch(e) { console.error(e); }
+ </div>`).join('');
  }
 
- async function cargarTransacciones() {
- try {
- const pedidos = await Pedidos.delRestaurante();
- transaccionesData = pedidos;
- renderTransacciones(pedidos);
- calcularMetodos(pedidos);
- } catch(e) { console.error(e); }
- }
+ const METODO_LABEL = { efectivo:'Efectivo', mercadopago:'Mercado Pago', tarjeta:'Tarjeta', paypal:'PayPal' };
 
  function renderTransacciones(pedidos) {
- document.getElementById('transacciones-body').innerHTML = pedidos.slice(0,50).map(p => `
+ const rows = pedidos.slice(0,50).map(p => `
  <tr>
  <td>#${p.id}</td>
  <td>${esc(p.cliente_nombre)}</td>
- <td>—</td>
+ <td>${METODO_LABEL[p.metodo_pago] || p.metodo_pago || '—'}</td>
  <td>$${parseFloat(p.total).toFixed(2)}</td>
  <td><span class="badge badge-${p.estado}">${estadoLabel(p.estado)}</span></td>
- </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--gray)">Sin transacciones</td></tr>';
+ </tr>`).join('');
+ document.getElementById('transacciones-body').innerHTML =
+ rows || '<tr><td colspan="5" style="text-align:center;color:var(--gray)">Sin transacciones</td></tr>';
  }
 
  function filtrarTransacciones() {
@@ -199,21 +213,21 @@
  }
 
  function calcularMetodos(pedidos) {
- const total = pedidos.length || 1;
- const conteo = { tarjeta: 0, paypal: 0, efectivo: 0 };
- // Como no tenemos método en pedidos directamente, simulamos proporciones
- pedidos.forEach((p, i) => {
- if (i % 3 === 0) conteo.tarjeta++;
- else if (i % 3 === 1) conteo.efectivo++;
- else conteo.paypal++;
- });
+ const conPago = pedidos.filter(p => p.metodo_pago);
+ const total = conPago.length || 1;
+ const conteo = {};
+ conPago.forEach(p => { conteo[p.metodo_pago] = (conteo[p.metodo_pago] || 0) + 1; });
  const stats = document.getElementById('metodos-stats');
+ if (!conPago.length) {
+ stats.innerHTML = '<p style="font-size:.82rem;color:var(--gray)">Sin pagos registrados</p>';
+ return;
+ }
  stats.innerHTML = Object.entries(conteo).map(([m, n]) => {
  const pct = Math.round((n/total)*100);
  return `<div style="margin-bottom:.6rem">
  <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.2rem">
- <span>${{tarjeta:' Tarjeta',paypal:' PayPal',efectivo:' Efectivo'}[m]}</span>
- <span>${pct}%</span>
+ <span>${METODO_LABEL[m] || m}</span>
+ <span>${n} (${pct}%)</span>
  </div>
  <div style="background:var(--border);border-radius:20px;height:6px">
  <div style="width:${pct}%;background:var(--primary);height:6px;border-radius:20px"></div>
@@ -225,8 +239,18 @@
  function abrirEstadoModal(id) {
  pedidoEditId = id;
  document.getElementById('modal-pedido-id').textContent = `#${id}`;
+ document.querySelectorAll('.estado-opt-btn').forEach(b => b.classList.remove('selected'));
+ const defaultBtn = document.querySelector('.estado-opt-btn[data-val="en_preparacion"]');
+ if (defaultBtn) defaultBtn.classList.add('selected');
  document.getElementById('estado-modal').classList.remove('hidden');
  }
+
+ document.querySelectorAll('.estado-opt-btn').forEach(btn => {
+ btn.addEventListener('click', () => {
+ document.querySelectorAll('.estado-opt-btn').forEach(b => b.classList.remove('selected'));
+ btn.classList.add('selected');
+ });
+ });
 
  function closeEstadoModal() {
  document.getElementById('estado-modal').classList.add('hidden');
@@ -234,7 +258,9 @@
  }
 
  async function guardarEstado() {
- const estado = document.getElementById('nuevo-estado').value;
+ const selectedBtn = document.querySelector('.estado-opt-btn.selected');
+ if (!selectedBtn) { toast('Selecciona un estado', 'warning'); return; }
+ const estado = selectedBtn.dataset.val;
  try {
  await Pedidos.updateEstado(pedidoEditId, estado);
  toast('Estado actualizado','success');
@@ -244,8 +270,8 @@
  }
 
  function estadoLabel(e) {
- return { pendiente:' Pendiente', en_preparacion:' En preparación',
- listo:' Listo', entregado:' Entregado', cancelado:' Cancelado' }[e] || e;
+ return { pendiente:'Pendiente', en_preparacion:'En preparación',
+ listo:'Listo', entregado:'Entregado', cancelado:'Cancelado' }[e] || e;
  }
  function esc(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 

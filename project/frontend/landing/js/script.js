@@ -302,8 +302,8 @@ function initContactForm() {
     'reg-email': {
       required: true,
       label: 'Correo institucional',
-      test: v => /^[^\s@]+@tsj\.edu\.mx$/i.test(v.trim()),
-      errorMsg: 'Usa tu correo institucional @tsj.edu.mx'
+      test: v => /^[^\s@]+@zapopan\.tecmm\.edu\.mx$/i.test(v.trim()),
+      errorMsg: 'Usa tu correo institucional @zapopan.tecmm.edu.mx'
     },
     'reg-password': {
       required: true,

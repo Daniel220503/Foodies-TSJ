@@ -33,7 +33,6 @@
 
  <div class="page-header">
  <h1>Restaurantes disponibles</h1>
- <p>Elige un restaurante para ver su menú y hacer tu pedido</p>
  </div>
 
  <div id="restaurantes-grid" class="grid-3">
@@ -75,7 +74,7 @@
 <div id="checkout-modal" class="modal-overlay hidden">
   <div class="modal">
     <div class="modal-header">
-      <h3>💳 Finalizar Pedido</h3>
+      <h3>Finalizar Pedido</h3>
       <button class="modal-close" onclick="closeCheckout()">✕</button>
     </div>
     <div class="modal-body">
@@ -85,17 +84,22 @@
         <input id="notas-pedido" type="text" class="form-control" placeholder="Sin cebolla, extra salsa..." />
       </div>
       <!-- Botón principal: Mercado Pago Checkout Pro -->
-      <button id="btn-mp" onclick="pagarConMP()"
-        style="width:100%;padding:.85rem;border:none;border-radius:10px;cursor:pointer;
-               background:#009ee3;color:#fff;font-size:1rem;font-weight:700;
-               display:flex;align-items:center;justify-content:center;gap:.6rem;margin-bottom:.75rem">
-        <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="16" cy="16" r="16" fill="#fff"/>
-          <path d="M8 16.5c0-4.142 3.582-7.5 8-7.5s8 3.358 8 7.5c0 1.38-.4 2.668-1.09 3.75H9.09A7.44 7.44 0 0 1 8 16.5Z" fill="#009ee3"/>
-          <path d="M10.5 20.25h11l-1.5 2.25h-8l-1.5-2.25Z" fill="#009ee3"/>
-        </svg>
-        Pagar con Mercado Pago
-      </button>
+      <div id="mp-wrapper" style="margin-bottom:.75rem">
+        <button id="btn-mp" onclick="pagarConMP()"
+          style="width:100%;padding:.85rem;border:none;border-radius:10px;cursor:pointer;
+                 background:#009ee3;color:#fff;font-size:1rem;font-weight:700;
+                 display:flex;align-items:center;justify-content:center;gap:.6rem">
+          <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="16" fill="#fff"/>
+            <path d="M8 16.5c0-4.142 3.582-7.5 8-7.5s8 3.358 8 7.5c0 1.38-.4 2.668-1.09 3.75H9.09A7.44 7.44 0 0 1 8 16.5Z" fill="#009ee3"/>
+            <path d="M10.5 20.25h11l-1.5 2.25h-8l-1.5-2.25Z" fill="#009ee3"/>
+          </svg>
+          <span id="btn-mp-label">Pagar con Mercado Pago</span>
+        </button>
+        <p id="mp-unavail-msg" style="display:none;font-size:.78rem;color:#6b7280;text-align:center;margin-top:.4rem">
+          No disponible en este entorno — usa el pago en efectivo
+        </p>
+      </div>
       <!-- Opción secundaria: efectivo -->
       <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
         <hr style="flex:1;border:none;border-top:1px solid #e5e7eb"/>
@@ -105,7 +109,7 @@
       <button id="btn-efectivo" onclick="confirmarPedidoEfectivo()"
         style="width:100%;padding:.7rem;border:1.5px solid #d1d5db;border-radius:10px;
                cursor:pointer;background:#fff;color:#374151;font-size:.92rem;font-weight:600">
-        💵 Pagar en efectivo en mostrador
+        Pagar en efectivo en mostrador
       </button>
     </div>
     <div class="modal-footer">
@@ -166,7 +170,7 @@
  return;
  }
  grid.innerHTML = lista.map(r => `
- <div class="card" onclick="abrirMenu(${r.id}, '${escHtml(r.nombre)}')">
+ <div class="card" data-rest-id="${r.id}" style="cursor:pointer">
  <div class="card-img-placeholder"></div>
  <div class="card-body">
  <div class="card-title">${escHtml(r.nombre)}</div>
@@ -174,6 +178,12 @@
  <button class="btn btn-primary btn-sm">Ver Menú →</button>
  </div>
  </div>`).join('');
+ document.querySelectorAll('[data-rest-id]').forEach(card => {
+ card.addEventListener('click', () => {
+ const r = restaurantesData.find(x => x.id === parseInt(card.dataset.restId));
+ if (r) abrirMenu(r.id, r.nombre);
+ });
+ });
  }
 
  function filtrarRestaurantes() {
@@ -237,7 +247,9 @@
  onclick="agregarAlCarrito(${pData})">+ Agregar</button>`;
  return `
  <div class="card">
- <div class="card-img-placeholder" style="height:120px;font-size:2rem"></div>
+ ${p.imagen_url
+ ? `<img src="${escHtml(p.imagen_url)}" class="card-img" style="height:140px;object-fit:cover" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'card-img-placeholder'}))" />`
+ : `<div class="card-img-placeholder" style="height:120px"></div>`}
  <div class="card-body">
  <div class="card-title">${escHtml(p.nombre)}</div>
  <div class="card-desc">${escHtml(p.descripcion || '')}</div>
@@ -307,7 +319,7 @@
 
  function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
 
- function irACheckout() {
+ async function irACheckout() {
  const items = Carrito.get();
  if (!items.length) { toast('Tu carrito está vacío','warning'); return; }
  const resumen = `
@@ -322,17 +334,43 @@
  document.getElementById('checkout-resumen').innerHTML = resumen;
  closeCartModal();
  document.getElementById('checkout-modal').classList.remove('hidden');
+
+ // Resetear estado del botón MP al abrir checkout
+ const btnMp = document.getElementById('btn-mp');
+ const msg   = document.getElementById('mp-unavail-msg');
+ const label = document.getElementById('btn-mp-label');
+ btnMp.disabled = false;
+ btnMp.style.background = '#009ee3';
+ btnMp.style.cursor = 'pointer';
+ btnMp.style.opacity = '1';
+ if (label) label.textContent = 'Pagar con Mercado Pago';
+ msg.style.display = 'none';
+
+ // Verificar disponibilidad de MP y ajustar botón
+ try {
+ const { disponible } = await fetch(API_URL + '/mp/status').then(r => r.json());
+ if (!disponible) {
+ btnMp.disabled = true;
+ btnMp.style.background = '#9ca3af';
+ btnMp.style.cursor = 'not-allowed';
+ btnMp.style.opacity = '0.65';
+ msg.style.display = 'block';
+ }
+ } catch(_) {}
  }
 
  function closeCheckout() { document.getElementById('checkout-modal').classList.add('hidden'); }
 
   // ── Pago con Mercado Pago Checkout Pro ──────────
   async function pagarConMP() {
+    const btn = document.getElementById('btn-mp');
+    if (btn.disabled) return;
     const items = Carrito.get();
     if (!items.length) return;
     const notas = document.getElementById('notas-pedido').value;
-    const btn   = document.getElementById('btn-mp');
-    btn.disabled = true; btn.textContent = '⏳ Creando orden...';
+    const mpLabel = document.getElementById('btn-mp-label');
+    btn.disabled = true;
+    if (mpLabel) mpLabel.textContent = 'Creando orden...';
     try {
       const { checkout_url } = await MP.crearPreferencia({
         restaurante_id: items[0].restaurante_id,
@@ -341,12 +379,13 @@
       });
       Carrito.clear();
       actualizarCartBadge();
-      // Redirigir al Checkout Pro de Mercado Pago
       window.location.href = checkout_url;
     } catch(e) {
       toast(e.message || 'No se pudo iniciar el pago. Intenta de nuevo.', 'error');
-      btn.disabled = false;
-      btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#fff"/><path d="M8 16.5c0-4.142 3.582-7.5 8-7.5s8 3.358 8 7.5c0 1.38-.4 2.668-1.09 3.75H9.09A7.44 7.44 0 0 1 8 16.5Z" fill="#009ee3"/><path d="M10.5 20.25h11l-1.5 2.25h-8l-1.5-2.25Z" fill="#009ee3"/></svg> Pagar con Mercado Pago';
+      if (!e.message.includes('no está disponible')) {
+        btn.disabled = false;
+        if (mpLabel) mpLabel.textContent = 'Pagar con Mercado Pago';
+      }
     }
   }
 
@@ -371,7 +410,7 @@
     } catch(e) {
       toast(e.message, 'error');
     } finally {
-      btn.disabled = false; btn.textContent = '💵 Pagar en efectivo en mostrador';
+      btn.disabled = false; btn.textContent = 'Pagar en efectivo en mostrador';
     }
   }
 
@@ -408,6 +447,134 @@
  document.getElementById('nav-toggle').addEventListener('click', function(){
   document.getElementById('navbar-nav').classList.toggle('open');
  });
+</script>
+
+<!-- ── Asistente IA ──────────────────────────── -->
+<style>
+ #chat-fab{position:fixed;bottom:1.5rem;left:1.5rem;width:52px;height:52px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:1.4rem;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;z-index:200;transition:transform .2s}
+ #chat-fab:hover{transform:scale(1.08)}
+ #chat-panel{position:fixed;bottom:5rem;left:1.5rem;width:320px;max-height:420px;background:#fff;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.18);display:flex;flex-direction:column;z-index:200;overflow:hidden;transition:opacity .2s,transform .2s}
+ #chat-panel.hidden{opacity:0;pointer-events:none;transform:translateY(12px)}
+ .chat-header{background:var(--primary);color:#fff;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between}
+ .chat-header-info{display:flex;flex-direction:column}
+ .chat-header-title{font-weight:700;font-size:.95rem}
+ .chat-header-sub{font-size:.72rem;opacity:.85}
+ #chat-close{background:none;border:none;color:#fff;font-size:1.1rem;cursor:pointer;line-height:1}
+ #chat-messages{flex:1;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.5rem;min-height:180px}
+ .msg{max-width:85%;padding:.5rem .75rem;border-radius:12px;font-size:.84rem;line-height:1.45}
+ .msg-bot{background:#f3f4f6;align-self:flex-start;border-bottom-left-radius:4px}
+ .msg-user{background:var(--primary);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+ #chat-input-row{display:flex;gap:.5rem;padding:.6rem .75rem;border-top:1px solid var(--border)}
+ #chat-input{flex:1;border:1px solid var(--border);border-radius:8px;padding:.4rem .7rem;font-size:.85rem;outline:none}
+ #chat-input:focus{border-color:var(--primary)}
+ #chat-send{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:.4rem .85rem;font-size:.84rem;font-weight:600;cursor:pointer}
+</style>
+
+<!-- FAB del asistente -->
+<button id="chat-fab" onclick="toggleChat()" title="Asistente TSJ Foodies">
+ <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z"/></svg>
+</button>
+
+<!-- Panel del asistente -->
+<div id="chat-panel" class="hidden">
+ <div class="chat-header">
+ <div class="chat-header-info">
+ <span class="chat-header-title">Asistente TSJ Foodies</span>
+ <span class="chat-header-sub">Pregunta sobre platillos, precios y mas</span>
+ </div>
+ <button id="chat-close" onclick="toggleChat()">✕</button>
+ </div>
+ <div id="chat-messages"></div>
+ <div id="chat-input-row">
+ <input id="chat-input" type="text" placeholder="Escribe tu pregunta..." onkeydown="if(event.key==='Enter')enviarMensaje()" />
+ <button id="chat-send" onclick="enviarMensaje()">Enviar</button>
+ </div>
+</div>
+
+<script>
+ (function(){
+ const AYUDA = 'Puedes preguntarme sobre:\n• Ingredientes de un platillo\n• Precios\n• Tiempos de preparación\n• Recomendaciones\n• Menu completo';
+
+ function toggleChat(){
+ const panel = document.getElementById('chat-panel');
+ const open = panel.classList.toggle('hidden');
+ if(!open && document.getElementById('chat-messages').children.length === 0)
+ addMsg('Hola! Soy el asistente de TSJ Foodies. ' + AYUDA, 'bot');
+ }
+
+ function addMsg(text, who){
+ const msgs = document.getElementById('chat-messages');
+ const d = document.createElement('div');
+ d.className = 'msg msg-' + who;
+ d.textContent = text;
+ msgs.appendChild(d);
+ msgs.scrollTop = msgs.scrollHeight;
+ }
+
+ function responder(q){
+ const t = q.toLowerCase().trim();
+ const productos = menuActual && menuActual.productos ? menuActual.productos : [];
+ const restauranteActivo = menuActual && menuActual.restaurante_id;
+
+ // Menú completo
+ if(/menu|menú|platillo|qué hay|que hay|opciones/.test(t)){
+ if(!productos.length) return restauranteActivo
+ ? 'El menú está vacío por el momento.'
+ : 'Abre un restaurante primero para ver su menú.';
+ return 'El menú incluye:\n' + productos.filter(p=>p.disponible).map(p=>`• ${p.nombre} — $${parseFloat(p.precio).toFixed(2)}`).join('\n');
+ }
+
+ // Precio
+ if(/precio|cuesta|cuánto|cuanto|valor/.test(t)){
+ const match = productos.find(p => t.includes(p.nombre.toLowerCase()));
+ if(match) return `${match.nombre} cuesta $${parseFloat(match.precio).toFixed(2)} MXN.`;
+ const disponibles = productos.filter(p=>p.disponible);
+ if(disponibles.length) return 'Precios disponibles:\n' + disponibles.map(p=>`• ${p.nombre}: $${parseFloat(p.precio).toFixed(2)}`).join('\n');
+ return 'Abre un menú para ver los precios.';
+ }
+
+ // Tiempo
+ if(/tiempo|minuto|espera|tarda|demora/.test(t)){
+ const match = productos.find(p => t.includes(p.nombre.toLowerCase()));
+ if(match) return `${match.nombre} tarda aprox. ${match.tiempo_estimado} minutos.`;
+ const disponibles = productos.filter(p=>p.disponible);
+ if(disponibles.length) return 'Tiempos estimados:\n' + disponibles.map(p=>`• ${p.nombre}: ${p.tiempo_estimado} min`).join('\n');
+ return 'Abre un menú para ver los tiempos.';
+ }
+
+ // Ingredientes / descripción
+ if(/ingrediente|descripción|descripcion|contiene|lleva/.test(t)){
+ const match = productos.find(p => t.includes(p.nombre.toLowerCase()));
+ if(match) return match.descripcion ? `${match.nombre}: ${match.descripcion}` : `No hay descripción registrada para ${match.nombre}.`;
+ return 'Dime el nombre del platillo para ver sus ingredientes.';
+ }
+
+ // Recomendación
+ if(/recomienda|recomendación|popular|mejor|favorito|bueno/.test(t)){
+ const disponibles = productos.filter(p=>p.disponible);
+ if(!disponibles.length) return 'Abre un menú para ver las recomendaciones.';
+ const rec = disponibles[Math.floor(Math.random()*disponibles.length)];
+ return `Te recomiendo: ${rec.nombre} a $${parseFloat(rec.precio).toFixed(2)} MXN. ${rec.descripcion || ''}`;
+ }
+
+ // Saludo
+ if(/hola|buenos|buenas|hi|hey/.test(t))
+ return 'Hola! Estoy aquí para ayudarte. ' + AYUDA;
+
+ return 'No encontré información sobre eso.\n' + AYUDA;
+ }
+
+ window.enviarMensaje = function(){
+ const input = document.getElementById('chat-input');
+ const texto = input.value.trim();
+ if(!texto) return;
+ addMsg(texto, 'user');
+ input.value = '';
+ setTimeout(() => addMsg(responder(texto), 'bot'), 300);
+ };
+
+ window.toggleChat = toggleChat;
+ })();
 </script>
 </body>
 </html>

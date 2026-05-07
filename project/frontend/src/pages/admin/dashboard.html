@@ -1,13 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
- <title>TSJ Foodies — Admin</title>
+ <title>TSJ Foodies â€” Admin</title>
  <link rel="stylesheet" href="../../styles/main.css"/>
  <style>
  .section{display:none}.section.active{display:block}
 
- /* ── Modales ── */
+ /* â”€â”€ Modales â”€â”€ */
  .modal-overlay{
  display:none;position:fixed;inset:0;
  background:rgba(0,0,0,.55);z-index:1000;
@@ -28,11 +28,11 @@
  .modal-footer{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1rem}
  .modal.danger .modal-title{color:var(--danger)}
 
- /* ── Toolbar ── */
+ /* â”€â”€ Toolbar â”€â”€ */
  .crud-toolbar{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-bottom:1.25rem}
  .crud-toolbar .search-bar{flex:1;min-width:200px;margin-bottom:0}
 
- /* ── Cards restaurantes ── */
+ /* â”€â”€ Cards restaurantes â”€â”€ */
  .rest-admin-card{
  border:1.5px solid var(--border);border-radius:var(--radius-lg);
  overflow:hidden;background:#fff;transition:box-shadow .2s,border-color .2s;
@@ -47,7 +47,7 @@
  .rest-card-actions{display:grid;grid-template-columns:1fr 1fr;gap:.35rem;padding:.65rem 1.1rem;border-top:1px solid var(--border);background:var(--light)}
  .rest-card-actions .span2{grid-column:1/-1}
 
- /* ── Panel productos ── */
+ /* â”€â”€ Panel productos â”€â”€ */
  .products-panel{background:var(--light);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-top:1.5rem}
  .products-panel-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
  .products-panel-title{font-weight:700;font-size:1rem}
@@ -70,7 +70,7 @@
 <body>
 
 <nav class="navbar">
- <button class="nav-toggle" id="sidebar-toggle" aria-label="Abrir menú">
+ <button class="nav-toggle" id="sidebar-toggle" aria-label="Abrir menÃº">
   <span></span><span></span><span></span>
  </button>
  <div class="navbar-brand">TSJ <span>FOODIES</span>
@@ -87,7 +87,7 @@
  <aside class="sidebar">
  <div class="sidebar-section">Panel</div>
  <a class="sidebar-link active" onclick="showSection('dashboard',this)"><span class="icon"></span> Dashboard</a>
- <div class="sidebar-section">Gestión</div>
+ <div class="sidebar-section">Gestion</div>
  <a class="sidebar-link" onclick="showSection('usuarios',this)"><span class="icon"></span> Usuarios</a>
  <a class="sidebar-link" onclick="showSection('restaurantes',this)"><span class="icon"></span> Restaurantes</a>
  <a class="sidebar-link" onclick="showSection('pedidos',this)"><span class="icon"></span> Pedidos</a>
@@ -101,7 +101,7 @@
  <div class="stats-grid" id="stats-grid"><div class="spinner"></div></div>
  <div class="card" style="margin-top:1.5rem">
  <div class="card-body">
- <h3 style="margin-bottom:1rem">Últimos pedidos</h3>
+ <h3 style="margin-bottom:1rem">pedidos</h3>
  <div class="table-wrap">
  <table><thead><tr><th>ID</th><th>Cliente</th><th>Restaurante</th><th>Total</th><th>Estado</th><th>Fecha</th></tr></thead>
  <tbody id="ultimos-pedidos"></tbody></table>
@@ -125,7 +125,6 @@
  <!-- RESTAURANTES + PRODUCTOS -->
  <div id="sec-restaurantes" class="section">
  <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
- <div><h1> Restaurantes</h1><p>CRUD completo · Selecciona uno para gestionar sus productos</p></div>
  <button class="btn btn-primary" onclick="abrirModalRestaurante(null)"> Nuevo Restaurante</button>
  </div>
 
@@ -147,7 +146,7 @@
  <div id="products-panel" class="products-panel" style="display:none">
  <div class="products-panel-header">
  <div>
- <div class="products-panel-title"> Productos de: <span id="products-rest-name" style="color:var(--primary)">—</span></div>
+ <div class="products-panel-title"> Productos de: <span id="products-rest-name" style="color:var(--primary)">â€”</span></div>
  <div class="products-panel-sub">Agrega, edita o elimina productos de este restaurante</div>
  </div>
  <div style="display:flex;gap:.5rem;flex-wrap:wrap">
@@ -161,7 +160,6 @@
 
  <!-- PEDIDOS -->
  <div id="sec-pedidos" class="section">
- <div class="page-header"><h1> Pedidos</h1><p>Supervisión de todos los pedidos</p></div>
  <div class="search-bar"><span></span>
  <input id="search-pedidos" type="text" placeholder="Buscar pedido..." oninput="filtrarPedidos()"/>
  </div>
@@ -180,12 +178,12 @@
  </main>
 </div>
 
-<!-- ══ MODAL RESTAURANTE ══ -->
+<!-- â•â• MODAL RESTAURANTE â•â• -->
 <div class="modal-overlay" id="modal-rest" role="dialog" aria-modal="true">
  <div class="modal">
  <div class="modal-header">
  <span class="modal-title" id="modal-rest-title">Nuevo Restaurante</span>
- <button class="modal-close" onclick="cerrarModal('modal-rest')" aria-label="Cerrar">×</button>
+ <button class="modal-close" onclick="cerrarModal('modal-rest')" aria-label="Cerrar">Ã—</button>
  </div>
 
  <!-- Datos del restaurante -->
@@ -194,19 +192,19 @@
  <input id="r-nombre" type="text" class="form-control" placeholder="Ej: Tacos El Compa" maxlength="100"/>
  </div>
  <div class="form-group">
- <label class="form-label">Descripción</label>
- <textarea id="r-desc" class="form-control" placeholder="Breve descripción..."></textarea>
+ <label class="form-label">Descripcion</label>
+ <textarea id="r-desc" class="form-control" placeholder="Breve descripciÃ³n..."></textarea>
  </div>
  <div class="form-group">
  <label class="form-label">URL de imagen <small style="color:var(--gray)">(opcional)</small></label>
  <input id="r-img" type="text" class="form-control" placeholder="https://..." autocomplete="off"/>
  </div>
 
- <!-- Datos del propietario — solo al CREAR -->
+ <!-- Datos del propietario â€” solo al CREAR -->
  <div id="grp-propietario" style="display:none">
  <hr style="margin:1.2rem 0;border:none;border-top:1px solid var(--border)"/>
  <p style="font-size:.82rem;font-weight:700;color:var(--dark);margin-bottom:.9rem">
- Datos del propietario (se crea su cuenta automáticamente)
+ Datos del propietario (se crea su cuenta automÃ¡ticamente)
  </p>
  <div class="form-group">
  <label class="form-label">Nombre del propietario <span style="color:var(--danger)">*</span></label>
@@ -217,10 +215,10 @@
  <input id="r-prop-email" type="email" class="form-control" placeholder="za000000@zapopan.tecmm.edu.mx" autocomplete="off"/>
  </div>
  <div class="form-group">
- <label class="form-label">Contraseña temporal <span style="color:var(--danger)">*</span></label>
- <input id="r-prop-pass" type="text" class="form-control" placeholder="Mínimo 6 caracteres" autocomplete="off"/>
+ <label class="form-label">ContraseÃ±a temporal <span style="color:var(--danger)">*</span></label>
+ <input id="r-prop-pass" type="text" class="form-control" placeholder="MÃ­nimo 6 caracteres" autocomplete="off"/>
  <small style="color:var(--gray);font-size:.75rem;margin-top:.25rem;display:block">
- Comparte esta contraseña con el propietario para que pueda iniciar sesión.
+ Comparte esta contraseÃ±a con el propietario para que pueda iniciar sesiÃ³n.
  </small>
  </div>
  </div>
@@ -233,20 +231,20 @@
  </div>
 </div>
 
-<!-- ══ MODAL PRODUCTO ══ -->
+<!-- â•â• MODAL PRODUCTO â•â• -->
 <div class="modal-overlay" id="modal-prod" role="dialog" aria-modal="true">
  <div class="modal">
  <div class="modal-header">
  <span class="modal-title" id="modal-prod-title">Nuevo Producto</span>
- <button class="modal-close" onclick="cerrarModal('modal-prod')" aria-label="Cerrar">×</button>
+ <button class="modal-close" onclick="cerrarModal('modal-prod')" aria-label="Cerrar">Ã—</button>
  </div>
  <div class="form-group">
  <label class="form-label">Nombre <span style="color:var(--danger)">*</span></label>
  <input id="p-nombre" type="text" class="form-control" placeholder="Ej: Taco al pastor" maxlength="100"/>
  </div>
  <div class="form-group">
- <label class="form-label">Descripción</label>
- <textarea id="p-desc" class="form-control" placeholder="Ingredientes, presentación, etc."></textarea>
+ <label class="form-label">DescripciÃ³n</label>
+ <textarea id="p-desc" class="form-control" placeholder="Ingredientes, presentaciÃ³n, etc."></textarea>
  </div>
  <div class="form-row">
  <div class="form-group">
@@ -277,17 +275,17 @@
  </div>
 </div>
 
-<!-- ══ MODAL CONFIRMAR ELIMINAR ══ -->
+<!-- â•â• MODAL CONFIRMAR ELIMINAR â•â• -->
 <div class="modal-overlay" id="modal-del" role="dialog" aria-modal="true">
  <div class="modal danger">
  <div class="modal-header">
- <span class="modal-title"> Confirmar eliminación</span>
- <button class="modal-close" onclick="cerrarModal('modal-del')" aria-label="Cerrar">×</button>
+ <span class="modal-title"> Confirmar eliminaciÃ³n</span>
+ <button class="modal-close" onclick="cerrarModal('modal-del')" aria-label="Cerrar">Ã—</button>
  </div>
  <p id="modal-del-msg" style="color:var(--gray);line-height:1.65"></p>
  <div class="modal-footer">
  <button class="btn btn-secondary" onclick="cerrarModal('modal-del')">Cancelar</button>
- <button class="btn btn-danger" id="btn-del-confirm" onclick="ejecutarEliminar()"> Sí, eliminar</button>
+ <button class="btn btn-danger" id="btn-del-confirm" onclick="ejecutarEliminar()"> SÃ­, eliminar</button>
  </div>
  </div>
 </div>
@@ -296,26 +294,26 @@
 <script>
 'use strict';
 
-/* ── Estado global ──────────────────────────────── */
+/* â”€â”€ Estado global â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 let dataUsuarios = [];
 let dataRestaurantes = [];
 let dataPedidos = [];
 let dataProductos = [];
 let filtroRest = null;
-let restEditId = null; // null = crear, número = editar
+let restEditId = null; // null = crear, nÃºmero = editar
 let restSelId = null; // restaurante seleccionado para productos
 let restSelNombre = '';
-let prodEditId = null; // null = crear, número = editar
-let delFn = null; // callback de eliminación pendiente
+let prodEditId = null; // null = crear, nÃºmero = editar
+let delFn = null; // callback de eliminaciÃ³n pendiente
 
-/* ── Init ───────────────────────────────────────── */
+/* â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const adminUser = requireAuth('admin');
 if (adminUser) {
  document.getElementById('admin-name').textContent = adminUser.nombre.split(' ')[0];
  cargarDashboard();
 }
 
-/* ── Sidebar nav ────────────────────────────────── */
+/* â”€â”€ Sidebar nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function showSection(id, link) {
  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
@@ -326,9 +324,9 @@ function showSection(id, link) {
  if (id === 'pedidos' && !dataPedidos.length) cargarPedidos();
 }
 
-/* ══════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  DASHBOARD
-══════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function cargarDashboard() {
  try {
  const [stats, pedidos] = await Promise.all([Admin.stats(), Admin.pedidos()]);
@@ -347,9 +345,9 @@ async function cargarDashboard() {
  } catch(e) { toast('Error en dashboard: ' + e.message, 'error'); }
 }
 
-/* ══════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  USUARIOS
-══════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function cargarUsuarios() {
  document.getElementById('tabla-usuarios').innerHTML = '<tr><td colspan="7" style="text-align:center"><div class="spinner" style="width:24px;height:24px;border-width:3px;margin:.5rem auto"></div></td></tr>';
  try {
@@ -379,14 +377,14 @@ function renderUsuarios(lista) {
 }
 
 async function toggleUsuario(id) {
- if (!confirm('¿Cambiar estado del usuario?')) return;
+ if (!confirm('Â¿Cambiar estado del usuario?')) return;
  try { await Admin.toggleUsuario(id); toast('Estado actualizado', 'success'); cargarUsuarios(); }
  catch(e) { toast(e.message, 'error'); }
 }
 
-/* ══════════════════════════════════════════════════
- RESTAURANTES — CRUD
-══════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ RESTAURANTES â€” CRUD
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function cargarRestaurantes() {
  document.getElementById('rest-grid').innerHTML = '<div class="spinner"></div>';
  try {
@@ -421,7 +419,7 @@ function aplicarFiltroRest() {
 function renderRestaurantes(lista) {
  const grid = document.getElementById('rest-grid');
  if (!lista.length) {
- grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon"></div><h3>Sin restaurantes</h3><p>No hay resultados para tu búsqueda</p></div>`;
+ grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon"></div><h3>Sin restaurantes</h3><p>No hay resultados para tu bÃºsqueda</p></div>`;
  return;
  }
  // FIX: usar data-id en botones en vez de strings con nombre en onclick
@@ -434,7 +432,7 @@ function renderRestaurantes(lista) {
  </div>
  <div class="rest-card-body">
  <div class="rest-card-name">${x(r.nombre)}</div>
- <div class="rest-card-owner"> ${x(r.propietario || '—')} · ${x(r.email || '—')}</div>
+ <div class="rest-card-owner"> ${x(r.propietario || 'â€”')} Â· ${x(r.email || 'â€”')}</div>
  <div class="rest-card-meta">
  <span class="badge ${r.aprobado ? 'badge-listo' : 'badge-pendiente'}">${r.aprobado ? ' Aprobado' : ' Pendiente'}</span>
  <span class="badge ${r.activo ? 'badge-en_preparacion' : 'badge-cancelado'}">${r.activo ? ' Activo' : ' Inactivo'}</span>
@@ -449,7 +447,7 @@ function renderRestaurantes(lista) {
  </div>
  </div>`).join('');
 
- // Delegar eventos desde el grid — evita problemas con nombres especiales
+ // Delegar eventos desde el grid â€” evita problemas con nombres especiales
  grid.querySelectorAll('[data-action]').forEach(btn => {
  btn.addEventListener('click', () => {
  const id = parseInt(btn.dataset.id, 10);
@@ -495,11 +493,11 @@ async function abrirModalRestaurante(id) {
  document.getElementById('modal-rest').classList.add('open');
  document.getElementById('r-nombre').focus();
 
- // Cargar usuarios solo al crear (async, después de abrir modal)
+ // Cargar usuarios solo al crear (async, despuÃ©s de abrir modal)
  if (!id) cargarPropietarios();
 }
 
-// cargarPropietarios eliminado — el admin ahora crea usuario y restaurante juntos
+// cargarPropietarios eliminado â€” el admin ahora crea usuario y restaurante juntos
 
 async function guardarRestaurante() {
  const nombre = document.getElementById('r-nombre').value.trim();
@@ -523,7 +521,7 @@ async function guardarRestaurante() {
 
  try {
  if (restEditId) {
- // EDITAR — solo nombre, descripción e imagen
+ // EDITAR â€” solo nombre, descripciÃ³n e imagen
  await Admin.actualizarRestaurante(restEditId, {
  nombre,
  descripcion: desc || null,
@@ -532,14 +530,14 @@ async function guardarRestaurante() {
  toast(' Restaurante actualizado', 'success');
 
  } else {
- // CREAR — incluye datos del propietario
+ // CREAR â€” incluye datos del propietario
  const propNombre = document.getElementById('r-prop-nombre').value.trim();
  const propEmail = document.getElementById('r-prop-email').value.trim();
  const propPass = document.getElementById('r-prop-pass').value;
 
- if (!propNombre) { errEl.textContent = 'El nombre del propietario es obligatorio.'; errEl.style.display = 'block'; document.getElementById('r-prop-nombre').focus(); btn.disabled=false; btn.textContent=' Guardar'; return; }
- if (!propEmail) { errEl.textContent = 'El correo del propietario es obligatorio.'; errEl.style.display = 'block'; document.getElementById('r-prop-email').focus(); btn.disabled=false; btn.textContent=' Guardar'; return; }
- if (!propPass || propPass.length < 6) { errEl.textContent = 'La contraseña debe tener mínimo 6 caracteres.'; errEl.style.display = 'block'; document.getElementById('r-prop-pass').focus(); btn.disabled=false; btn.textContent=' Guardar'; return; }
+ if (!propNombre) { errEl.textContent = 'El nombre del propietario es obligatorio.'; errEl.style.display = 'block'; document.getElementById('r-prop-nombre').focus(); btn.disabled=false; btn.textContent='Guardar'; return; }
+ if (!propEmail) { errEl.textContent = 'El correo del propietario es obligatorio.'; errEl.style.display = 'block'; document.getElementById('r-prop-email').focus(); btn.disabled=false; btn.textContent='Guardar'; return; }
+ if (!propPass || propPass.length < 6) { errEl.textContent = 'La contraseÃ±a debe tener mÃ­nimo 6 caracteres.'; errEl.style.display = 'block'; document.getElementById('r-prop-pass').focus(); btn.disabled=false; btn.textContent='Guardar'; return; }
 
  await Admin.crearRestaurante({
  nombre,
@@ -559,7 +557,7 @@ async function guardarRestaurante() {
  errEl.style.display = 'block';
  } finally {
  btn.disabled = false;
- btn.textContent = ' Guardar';
+ btn.textContent = 'Guardar';
  }
 }
 
@@ -570,15 +568,15 @@ async function aprobar(id) {
 
 async function toggleRest(id, activo) {
  const msg = activo ? 'pausar' : 'activar';
- if (!confirm(`¿Deseas ${msg} este restaurante?`)) return;
+ if (!confirm(`Â¿Deseas ${msg} este restaurante?`)) return;
  try { await Admin.toggleRestaurante(id); toast('Estado actualizado', 'success'); await cargarRestaurantes(); }
  catch(e) { toast(e.message, 'error'); }
 }
 
 function pedirEliminarRest(id, nombre) {
  document.getElementById('modal-del-msg').innerHTML =
- `¿Eliminar el restaurante <strong>"${x(nombre)}"</strong>?<br><br>
- <small style="color:var(--gray)">Se desactivará del sistema. El historial de pedidos se conserva.</small>`;
+ `Â¿Eliminar el restaurante <strong>"${x(nombre)}"</strong>?<br><br>
+ <small style="color:var(--gray)">Se desactivarÃ¡ del sistema. El historial de pedidos se conserva.</small>`;
  delFn = async () => {
  await Admin.eliminarRestaurante(id);
  toast(' Restaurante eliminado', 'success');
@@ -588,9 +586,9 @@ function pedirEliminarRest(id, nombre) {
  document.getElementById('modal-del').classList.add('open');
 }
 
-/* ══════════════════════════════════════════════════
- PRODUCTOS — CRUD
-══════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ PRODUCTOS â€” CRUD
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function seleccionarRestaurante(id, nombre) {
  restSelId = id; restSelNombre = nombre;
  document.getElementById('products-rest-name').textContent = nombre;
@@ -621,7 +619,7 @@ async function cargarProductos() {
 function renderProductos(lista) {
  if (!lista.length) {
  document.getElementById('products-list').innerHTML =
- '<div class="products-empty"> Sin productos todavía.<br>Agrega el primero con el botón de arriba.</div>';
+ '<div class="products-empty"> Sin productos todavÃ­a.<br>Agrega el primero con el botÃ³n de arriba.</div>';
  return;
  }
  // FIX: usar data-id en botones, no pasar nombre en onclick
@@ -630,7 +628,7 @@ function renderProductos(lista) {
  <span class="product-emoji"></span>
  <div class="product-info">
  <div class="product-name">${x(p.nombre)}</div>
- <div class="product-meta">${x(p.descripcion || 'Sin descripción')} · ${p.tiempo_estimado} min · ${p.disponible ? ' Disponible' : ' No disponible'}</div>
+ <div class="product-meta">${x(p.descripcion || 'Sin descripciÃ³n')} Â· ${p.tiempo_estimado} min Â· ${p.disponible ? ' Disponible' : ' No disponible'}</div>
  </div>
  <div class="product-price">$${parseFloat(p.precio).toFixed(2)}</div>
  <div class="product-actions">
@@ -640,7 +638,7 @@ function renderProductos(lista) {
  </div>`).join('');
  document.getElementById('products-list').innerHTML = html;
 
- // Delegación de eventos — FIX para nombres con caracteres especiales
+ // DelegaciÃ³n de eventos â€” FIX para nombres con caracteres especiales
  document.querySelectorAll('[data-prod-action]').forEach(btn => {
  btn.addEventListener('click', () => {
  const pid = parseInt(btn.dataset.pid, 10);
@@ -713,11 +711,11 @@ async function guardarProducto() {
  } catch(e) {
  errEl.textContent = e.message || 'Error al guardar';
  errEl.style.display = 'block';
- } finally { btn.disabled = false; btn.textContent = ' Guardar'; }
+ } finally { btn.disabled = false; btn.textContent = 'Guardar'; }
 }
 
 function pedirEliminarProd(id, nombre) {
- document.getElementById('modal-del-msg').innerHTML = `¿Eliminar el producto <strong>"${x(nombre)}"</strong>?`;
+ document.getElementById('modal-del-msg').innerHTML = `Â¿Eliminar el producto <strong>"${x(nombre)}"</strong>?`;
  delFn = async () => {
  await Admin.eliminarProducto(restSelId, id);
  toast(' Producto eliminado', 'success');
@@ -726,7 +724,7 @@ function pedirEliminarProd(id, nombre) {
  document.getElementById('modal-del').classList.add('open');
 }
 
-/* ── Modal utils ────────────────────────────────── */
+/* â”€â”€ Modal utils â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
 
 async function ejecutarEliminar() {
@@ -735,10 +733,10 @@ async function ejecutarEliminar() {
  btn.disabled = true; btn.textContent = ' Eliminando...';
  try { await delFn(); cerrarModal('modal-del'); }
  catch(e) { toast(e.message, 'error'); }
- finally { btn.disabled = false; btn.textContent = ' Sí, eliminar'; delFn = null; }
+ finally { btn.disabled = false; btn.textContent = ' SÃ­, eliminar'; delFn = null; }
 }
 
-// Cerrar al click fuera — solo modal de confirmación, no formularios
+// Cerrar al click fuera â€” solo modal de confirmaciÃ³n, no formularios
 document.getElementById('modal-del').addEventListener('click', e => {
  if (e.target === document.getElementById('modal-del')) cerrarModal('modal-del');
 });
@@ -748,9 +746,9 @@ document.addEventListener('keydown', e => {
  document.querySelectorAll('.modal-overlay.open').forEach(m => cerrarModal(m.id));
 });
 
-/* ══════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  PEDIDOS
-══════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function cargarPedidos() {
  document.getElementById('tabla-pedidos').innerHTML = '<tr><td colspan="7" style="text-align:center"><div class="spinner" style="width:24px;height:24px;border-width:3px;margin:.5rem auto"></div></td></tr>';
  try { dataPedidos = await Admin.pedidos(); renderPedidos(dataPedidos); }
@@ -783,7 +781,7 @@ function renderPedidos(lista) {
  : '<tr><td colspan="7" style="text-align:center;color:var(--gray)">Sin pedidos</td></tr>';
 }
 
-/* ── Utilidades ─────────────────────────────────── */
+/* â”€â”€ Utilidades â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function estadoLabel(e) {
  return { pendiente:' Pendiente', en_preparacion:' En prep.', listo:' Listo', entregado:' Entregado', cancelado:' Cancelado' }[e] || e;
 }
