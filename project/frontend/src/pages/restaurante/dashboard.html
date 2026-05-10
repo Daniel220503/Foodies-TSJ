@@ -279,5 +279,135 @@
   document.getElementById('navbar-nav').classList.toggle('open');
  });
 </script>
+
+<!-- ── Asistente Gemini para Restaurante ───────── -->
+<style>
+ #rest-chat-fab{position:fixed;bottom:1.5rem;right:1.5rem;width:54px;height:54px;border-radius:50%;background:#10b981;color:#fff;border:none;font-size:1.4rem;cursor:pointer;box-shadow:0 4px 14px rgba(16,185,129,.4);display:flex;align-items:center;justify-content:center;z-index:200;transition:transform .2s}
+ #rest-chat-fab:hover{transform:scale(1.08)}
+ #rest-chat-panel{position:fixed;bottom:5.5rem;right:1.5rem;width:340px;max-height:480px;background:#fff;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.18);display:flex;flex-direction:column;z-index:200;overflow:hidden;transition:opacity .2s,transform .2s}
+ #rest-chat-panel.hidden{opacity:0;pointer-events:none;transform:translateY(12px)}
+ .rch-header{background:#10b981;color:#fff;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between}
+ .rch-header-info{display:flex;flex-direction:column}
+ .rch-header-title{font-weight:700;font-size:.95rem}
+ .rch-header-sub{font-size:.72rem;opacity:.85}
+ #rch-close{background:none;border:none;color:#fff;font-size:1.1rem;cursor:pointer}
+ #rch-messages{flex:1;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.5rem;min-height:200px}
+ .rch-msg{max-width:88%;padding:.5rem .75rem;border-radius:12px;font-size:.84rem;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+ .rch-msg-bot{background:#f0fdf4;align-self:flex-start;border-bottom-left-radius:4px}
+ .rch-msg-user{background:#10b981;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+ .rch-msg-typing{background:#f0fdf4;align-self:flex-start;border-radius:12px;border-bottom-left-radius:4px;padding:.5rem .9rem;font-size:1.2rem;letter-spacing:.1rem}
+ #rch-input-row{display:flex;gap:.5rem;padding:.6rem .75rem;border-top:1px solid var(--border)}
+ #rch-input{flex:1;border:1px solid var(--border);border-radius:8px;padding:.4rem .7rem;font-size:.85rem;outline:none}
+ #rch-input:focus{border-color:#10b981}
+ #rch-send{background:#10b981;color:#fff;border:none;border-radius:8px;padding:.4rem .85rem;font-size:.84rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+ #rch-send:disabled{opacity:.5;cursor:not-allowed}
+</style>
+
+<button id="rest-chat-fab" onclick="toggleRestChat()" title="Asistente IA de administración">
+ <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+</button>
+
+<div id="rest-chat-panel" class="hidden">
+ <div class="rch-header">
+  <div class="rch-header-info">
+   <span class="rch-header-title">Asistente de Administración</span>
+   <span class="rch-header-sub">Análisis de ventas, consejos y más</span>
+  </div>
+  <button id="rch-close" onclick="toggleRestChat()">✕</button>
+ </div>
+ <div id="rch-messages"></div>
+ <div id="rch-input-row">
+  <input id="rch-input" type="text" placeholder="¿Qué platillo se vende más?" onkeydown="if(event.key==='Enter')enviarRestChat()" />
+  <button id="rch-send" onclick="enviarRestChat()">Enviar</button>
+ </div>
+</div>
+
+<script>
+(function(){
+  // Historial de conversación para que Gemini recuerde el contexto
+  const historial = [];
+
+  function toggleRestChat(){
+    const panel = document.getElementById('rest-chat-panel');
+    const abriendo = panel.classList.toggle('hidden');
+    if(!abriendo && document.getElementById('rch-messages').children.length === 0){
+      agregarMsg('Hola! Soy tu asistente de administración. Puedo analizar tus ventas, decirte qué platillos se venden más, cómo van tus ingresos y darte consejos para mejorar. ¿En qué te ayudo?', 'bot');
+    }
+  }
+
+  function agregarMsg(texto, quien){
+    const msgs = document.getElementById('rch-messages');
+    const d = document.createElement('div');
+    d.className = 'rch-msg rch-msg-' + quien;
+    d.textContent = texto;
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function mostrarTyping(){
+    const msgs = document.getElementById('rch-messages');
+    const d = document.createElement('div');
+    d.className = 'rch-msg-typing';
+    d.id = 'rch-typing';
+    d.textContent = '···';
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function quitarTyping(){
+    const t = document.getElementById('rch-typing');
+    if(t) t.remove();
+  }
+
+  window.enviarRestChat = async function(){
+    const input = document.getElementById('rch-input');
+    const btn   = document.getElementById('rch-send');
+    const texto = input.value.trim();
+    if(!texto) return;
+
+    agregarMsg(texto, 'user');
+    input.value = '';
+    input.disabled = true;
+    btn.disabled   = true;
+    mostrarTyping();
+
+    try {
+      // tsj_token es la clave que usa api.js para guardar el JWT
+      const res = await fetch(`${API_URL}/chat/restaurante`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`
+        },
+        body: JSON.stringify({ mensaje: texto, historial })
+      });
+
+      const data = await res.json();
+      quitarTyping();
+
+      if(!res.ok){
+        agregarMsg(data.error || 'Ocurrió un error. Intenta de nuevo.', 'bot');
+        return;
+      }
+
+      agregarMsg(data.respuesta, 'bot');
+
+      // Guardamos el intercambio para que Gemini recuerde la conversación
+      historial.push({ role: 'user',  parts: [{ text: texto }] });
+      historial.push({ role: 'model', parts: [{ text: data.respuesta }] });
+
+    } catch(e){
+      quitarTyping();
+      agregarMsg('No pude conectarme. Verifica tu conexión.', 'bot');
+    } finally {
+      input.disabled = false;
+      btn.disabled   = false;
+      input.focus();
+    }
+  };
+
+  window.toggleRestChat = toggleRestChat;
+})();
+</script>
 </body>
 </html>

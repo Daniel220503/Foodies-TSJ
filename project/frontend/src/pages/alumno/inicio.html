@@ -449,132 +449,136 @@
  });
 </script>
 
-<!-- ── Asistente IA ──────────────────────────── -->
+<!-- ── Asistente Gemini ───────────────────────── -->
 <style>
  #chat-fab{position:fixed;bottom:1.5rem;left:1.5rem;width:52px;height:52px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:1.4rem;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;z-index:200;transition:transform .2s}
  #chat-fab:hover{transform:scale(1.08)}
- #chat-panel{position:fixed;bottom:5rem;left:1.5rem;width:320px;max-height:420px;background:#fff;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.18);display:flex;flex-direction:column;z-index:200;overflow:hidden;transition:opacity .2s,transform .2s}
+ #chat-panel{position:fixed;bottom:5rem;left:1.5rem;width:320px;max-height:460px;background:#fff;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.18);display:flex;flex-direction:column;z-index:200;overflow:hidden;transition:opacity .2s,transform .2s}
  #chat-panel.hidden{opacity:0;pointer-events:none;transform:translateY(12px)}
  .chat-header{background:var(--primary);color:#fff;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between}
  .chat-header-info{display:flex;flex-direction:column}
  .chat-header-title{font-weight:700;font-size:.95rem}
  .chat-header-sub{font-size:.72rem;opacity:.85}
  #chat-close{background:none;border:none;color:#fff;font-size:1.1rem;cursor:pointer;line-height:1}
- #chat-messages{flex:1;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.5rem;min-height:180px}
- .msg{max-width:85%;padding:.5rem .75rem;border-radius:12px;font-size:.84rem;line-height:1.45}
+ #chat-messages{flex:1;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.5rem;min-height:200px}
+ .msg{max-width:88%;padding:.5rem .75rem;border-radius:12px;font-size:.84rem;line-height:1.5;white-space:pre-wrap;word-break:break-word}
  .msg-bot{background:#f3f4f6;align-self:flex-start;border-bottom-left-radius:4px}
  .msg-user{background:var(--primary);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+ .msg-typing{background:#f3f4f6;align-self:flex-start;border-radius:12px;border-bottom-left-radius:4px;padding:.5rem .9rem;font-size:1.2rem;letter-spacing:.1rem}
  #chat-input-row{display:flex;gap:.5rem;padding:.6rem .75rem;border-top:1px solid var(--border)}
- #chat-input{flex:1;border:1px solid var(--border);border-radius:8px;padding:.4rem .7rem;font-size:.85rem;outline:none}
+ #chat-input{flex:1;border:1px solid var(--border);border-radius:8px;padding:.4rem .7rem;font-size:.85rem;outline:none;resize:none}
  #chat-input:focus{border-color:var(--primary)}
- #chat-send{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:.4rem .85rem;font-size:.84rem;font-weight:600;cursor:pointer}
+ #chat-send{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:.4rem .85rem;font-size:.84rem;font-weight:600;cursor:pointer;transition:opacity .2s}
+ #chat-send:disabled{opacity:.5;cursor:not-allowed}
 </style>
 
-<!-- FAB del asistente -->
 <button id="chat-fab" onclick="toggleChat()" title="Asistente TSJ Foodies">
  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z"/></svg>
 </button>
 
-<!-- Panel del asistente -->
 <div id="chat-panel" class="hidden">
  <div class="chat-header">
- <div class="chat-header-info">
- <span class="chat-header-title">Asistente TSJ Foodies</span>
- <span class="chat-header-sub">Pregunta sobre platillos, precios y mas</span>
- </div>
- <button id="chat-close" onclick="toggleChat()">✕</button>
+  <div class="chat-header-info">
+   <span class="chat-header-title">Asistente TSJ Foodies</span>
+   <span class="chat-header-sub">Pregunta sobre platillos, precios y más</span>
+  </div>
+  <button id="chat-close" onclick="toggleChat()">✕</button>
  </div>
  <div id="chat-messages"></div>
  <div id="chat-input-row">
- <input id="chat-input" type="text" placeholder="Escribe tu pregunta..." onkeydown="if(event.key==='Enter')enviarMensaje()" />
- <button id="chat-send" onclick="enviarMensaje()">Enviar</button>
+  <input id="chat-input" type="text" placeholder="Escribe tu pregunta..." onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();enviarMensaje()}" />
+  <button id="chat-send" onclick="enviarMensaje()">Enviar</button>
  </div>
 </div>
 
 <script>
- (function(){
- const AYUDA = 'Puedes preguntarme sobre:\n• Ingredientes de un platillo\n• Precios\n• Tiempos de preparación\n• Recomendaciones\n• Menu completo';
+(function(){
+  // historial guarda la conversación en el formato que entiende Gemini:
+  // [{role:'user', parts:[{text:'...'}]}, {role:'model', parts:[{text:'...'}]}, ...]
+  // Se lo mandamos al backend en cada mensaje para que Gemini recuerde el contexto
+  const historial = [];
 
- function toggleChat(){
- const panel = document.getElementById('chat-panel');
- const open = panel.classList.toggle('hidden');
- if(!open && document.getElementById('chat-messages').children.length === 0)
- addMsg('Hola! Soy el asistente de TSJ Foodies. ' + AYUDA, 'bot');
- }
+  function toggleChat(){
+    const panel = document.getElementById('chat-panel');
+    const abriendo = panel.classList.toggle('hidden');
+    // Si es la primera vez que se abre, mostramos el saludo
+    if(!abriendo && document.getElementById('chat-messages').children.length === 0){
+      agregarMensaje('¡Hola! Soy el asistente de TSJ Foodies. Puedo ayudarte con el menú, precios, tiempos y recomendaciones. ¿Qué deseas saber?', 'bot');
+    }
+  }
 
- function addMsg(text, who){
- const msgs = document.getElementById('chat-messages');
- const d = document.createElement('div');
- d.className = 'msg msg-' + who;
- d.textContent = text;
- msgs.appendChild(d);
- msgs.scrollTop = msgs.scrollHeight;
- }
+  function agregarMensaje(texto, quien){
+    const msgs = document.getElementById('chat-messages');
+    const d = document.createElement('div');
+    d.className = 'msg msg-' + quien;
+    d.textContent = texto;
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+    return d;
+  }
 
- function responder(q){
- const t = q.toLowerCase().trim();
- const productos = menuActual && menuActual.productos ? menuActual.productos : [];
- const restauranteActivo = menuActual && menuActual.restaurante_id;
+  function mostrarTyping(){
+    const msgs = document.getElementById('chat-messages');
+    const d = document.createElement('div');
+    d.className = 'msg-typing';
+    d.id = 'chat-typing';
+    d.textContent = '···';
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
 
- // Menú completo
- if(/menu|menú|platillo|qué hay|que hay|opciones/.test(t)){
- if(!productos.length) return restauranteActivo
- ? 'El menú está vacío por el momento.'
- : 'Abre un restaurante primero para ver su menú.';
- return 'El menú incluye:\n' + productos.filter(p=>p.disponible).map(p=>`• ${p.nombre} — $${parseFloat(p.precio).toFixed(2)}`).join('\n');
- }
+  function quitarTyping(){
+    const t = document.getElementById('chat-typing');
+    if(t) t.remove();
+  }
 
- // Precio
- if(/precio|cuesta|cuánto|cuanto|valor/.test(t)){
- const match = productos.find(p => t.includes(p.nombre.toLowerCase()));
- if(match) return `${match.nombre} cuesta $${parseFloat(match.precio).toFixed(2)} MXN.`;
- const disponibles = productos.filter(p=>p.disponible);
- if(disponibles.length) return 'Precios disponibles:\n' + disponibles.map(p=>`• ${p.nombre}: $${parseFloat(p.precio).toFixed(2)}`).join('\n');
- return 'Abre un menú para ver los precios.';
- }
+  window.enviarMensaje = async function(){
+    const input = document.getElementById('chat-input');
+    const btn   = document.getElementById('chat-send');
+    const texto = input.value.trim();
+    if(!texto) return;
 
- // Tiempo
- if(/tiempo|minuto|espera|tarda|demora/.test(t)){
- const match = productos.find(p => t.includes(p.nombre.toLowerCase()));
- if(match) return `${match.nombre} tarda aprox. ${match.tiempo_estimado} minutos.`;
- const disponibles = productos.filter(p=>p.disponible);
- if(disponibles.length) return 'Tiempos estimados:\n' + disponibles.map(p=>`• ${p.nombre}: ${p.tiempo_estimado} min`).join('\n');
- return 'Abre un menú para ver los tiempos.';
- }
+    agregarMensaje(texto, 'user');
+    input.value = '';
+    input.disabled = true;
+    btn.disabled   = true;
+    mostrarTyping();
 
- // Ingredientes / descripción
- if(/ingrediente|descripción|descripcion|contiene|lleva/.test(t)){
- const match = productos.find(p => t.includes(p.nombre.toLowerCase()));
- if(match) return match.descripcion ? `${match.nombre}: ${match.descripcion}` : `No hay descripción registrada para ${match.nombre}.`;
- return 'Dime el nombre del platillo para ver sus ingredientes.';
- }
+    try {
+      // Llamamos al backend con el mensaje y el historial completo de la conversación
+      const res = await fetch(`${API_URL}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mensaje: texto, historial })
+      });
 
- // Recomendación
- if(/recomienda|recomendación|popular|mejor|favorito|bueno/.test(t)){
- const disponibles = productos.filter(p=>p.disponible);
- if(!disponibles.length) return 'Abre un menú para ver las recomendaciones.';
- const rec = disponibles[Math.floor(Math.random()*disponibles.length)];
- return `Te recomiendo: ${rec.nombre} a $${parseFloat(rec.precio).toFixed(2)} MXN. ${rec.descripcion || ''}`;
- }
+      const data = await res.json();
+      quitarTyping();
 
- // Saludo
- if(/hola|buenos|buenas|hi|hey/.test(t))
- return 'Hola! Estoy aquí para ayudarte. ' + AYUDA;
+      if(!res.ok){
+        agregarMensaje('Ocurrió un error. Intenta de nuevo.', 'bot');
+        return;
+      }
 
- return 'No encontré información sobre eso.\n' + AYUDA;
- }
+      agregarMensaje(data.respuesta, 'bot');
 
- window.enviarMensaje = function(){
- const input = document.getElementById('chat-input');
- const texto = input.value.trim();
- if(!texto) return;
- addMsg(texto, 'user');
- input.value = '';
- setTimeout(() => addMsg(responder(texto), 'bot'), 300);
- };
+      // Guardamos el intercambio en el historial para que Gemini
+      // recuerde lo que se dijo en los siguientes mensajes
+      historial.push({ role: 'user',  parts: [{ text: texto }] });
+      historial.push({ role: 'model', parts: [{ text: data.respuesta }] });
 
- window.toggleChat = toggleChat;
- })();
+    } catch(e){
+      quitarTyping();
+      agregarMensaje('No pude conectarme. Verifica tu conexión.', 'bot');
+    } finally {
+      input.disabled = false;
+      btn.disabled   = false;
+      input.focus();
+    }
+  };
+
+  window.toggleChat = toggleChat;
+})();
 </script>
 </body>
 </html>
