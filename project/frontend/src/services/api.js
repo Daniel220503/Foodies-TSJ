@@ -29,7 +29,7 @@ async function api(method, path, body = null) {
  if (body) opts.body = JSON.stringify(body);
  const res = await fetch(API_URL + path, opts);
  const data = await res.json().catch(() => ({}));
- if (res.status === 401 || res.status === 403) {
+ if ((res.status === 401 || res.status === 403) && !path.startsWith('/auth/')) {
    clearSession();
    window.location.href = '/login.html';
    return null;
