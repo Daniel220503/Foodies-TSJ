@@ -2,10 +2,10 @@
    TSJ FOODIES — Estilos Globales
    ============================================= */
 :root {
-  --primary:      #b45309;
-  --primary-dark: #92400e;
-  --primary-light:#fef3c7;
-  --accent:       #f59e0b;
+  --primary:      #ea580c;
+  --primary-dark: #c2410c;
+  --primary-light:#fff7ed;
+  --accent:       #fb923c;
   --dark:         #1f2937;
   --gray:         #6b7280;
   --light:        #f9fafb;
@@ -176,7 +176,7 @@ input, select, textarea { font-family: var(--font); }
 .pedido-estado-entregado      { border-left-color: #6b7280; }
 .pedido-estado-cancelado      { border-left-color: #ef4444; }
 .badge-cliente       { background: #dbeafe; color: #1e40af; }
-.badge-restaurante   { background: #fef3c7; color: #92400e; }
+.badge-restaurante   { background: #fff7ed; color: #c2410c; }
 .badge-admin         { background: #ede9fe; color: #5b21b6; }
 
 /* ── TABLA ──────────────────────────────────── */
@@ -232,20 +232,22 @@ tr:hover td { background: #f9fafb; }
 
 /* ── CARRITO FLOTANTE ────────────────────────── */
 .cart-fab {
-  position: fixed; bottom: 2rem; right: 2rem;
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
   background: var(--primary); color: var(--white);
-  border: none; border-radius: 50%; width: 58px; height: 58px;
-  font-size: 1.4rem; box-shadow: var(--shadow-lg);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 200; transition: background .2s, transform .2s;
+  border: none; border-radius: 50px;
+  padding: .65rem 1.1rem .65rem .85rem;
+  font-size: .88rem; font-weight: 700;
+  box-shadow: 0 4px 16px rgba(234,88,12,.45);
+  display: flex; align-items: center; gap: .45rem;
+  z-index: 200; transition: transform .2s, box-shadow .2s;
 }
-.cart-fab:hover { background: var(--primary-dark); transform: scale(1.08); }
+.cart-fab:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(234,88,12,.55); }
 .cart-badge {
-  position: absolute; top: -4px; right: -4px;
   background: var(--danger); color: var(--white);
-  border-radius: 50%; width: 22px; height: 22px;
+  border-radius: 50%; min-width: 20px; height: 20px;
   font-size: .75rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
+  padding: 0 .3rem;
 }
 
 /* ── SIDEBAR (restaurante / admin) ──────────── */
@@ -343,6 +345,68 @@ tr:hover td { background: #f9fafb; }
 .pedido-items li { padding: .2rem 0; }
 .pedido-total { font-size: 1rem; font-weight: 700; color: var(--primary); }
 .pedido-actions { display: flex; gap: .5rem; margin-top: .8rem; flex-wrap: wrap; }
+
+/* ── TRACKER DE PEDIDO ───────────────────────── */
+.tracker {
+  margin: 1rem 0 .5rem;
+}
+.tracker-steps {
+  display: flex; align-items: center; gap: 0;
+}
+.tracker-step {
+  display: flex; flex-direction: column; align-items: center; flex: 1;
+  position: relative;
+}
+.tracker-step-circle {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem; font-weight: 700; border: 2.5px solid var(--border);
+  background: var(--white); color: var(--gray); z-index: 1;
+  transition: all .3s;
+}
+.tracker-step.done .tracker-step-circle {
+  background: var(--success); border-color: var(--success); color: #fff;
+}
+.tracker-step.current .tracker-step-circle {
+  background: var(--primary); border-color: var(--primary); color: #fff;
+  animation: pulseStep 1.5s ease-in-out infinite;
+}
+.tracker-step.listo .tracker-step-circle {
+  background: var(--success); border-color: var(--success); color: #fff;
+  animation: pulseStep 1.2s ease-in-out infinite;
+}
+@keyframes pulseStep {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(234,88,12,.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(234,88,12,.0); }
+}
+.tracker-step.listo .tracker-step-circle {
+  animation: pulseGreen 1.2s ease-in-out infinite;
+}
+@keyframes pulseGreen {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,.5); }
+  50%       { box-shadow: 0 0 0 8px rgba(16,185,129,.0); }
+}
+.tracker-step-label {
+  font-size: .68rem; margin-top: .35rem; color: var(--gray);
+  text-align: center; font-weight: 500; line-height: 1.2;
+}
+.tracker-step.done .tracker-step-label,
+.tracker-step.current .tracker-step-label { color: var(--dark); font-weight: 700; }
+.tracker-step.listo .tracker-step-label { color: var(--success); font-weight: 700; }
+.tracker-line {
+  flex: 1; height: 3px; background: var(--border);
+  margin-bottom: 1.5rem; transition: background .3s;
+}
+.tracker-line.done { background: var(--success); }
+
+/* Banner "¡Listo para recoger!" */
+.tracker-listo-banner {
+  display: flex; align-items: center; gap: .6rem;
+  background: #d1fae5; border: 1.5px solid #6ee7b7;
+  border-radius: 10px; padding: .7rem 1rem; margin-top: .5rem;
+  font-weight: 700; color: #065f46; font-size: .92rem;
+  animation: fadeInUp .4s ease;
+}
 
 /* ── COMPROBANTE ─────────────────────────────── */
 .comprobante {
