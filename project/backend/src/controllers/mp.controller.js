@@ -90,6 +90,7 @@ async function crearPreferencia(req, res) {
           failure: `${baseUrl}/src/pages/alumno/pago-resultado.html`,
           pending: `${baseUrl}/src/pages/alumno/pago-resultado.html`
         },
+        auto_return: 'approved',
         statement_descriptor: 'TSJ Foodies'
       }
     });
