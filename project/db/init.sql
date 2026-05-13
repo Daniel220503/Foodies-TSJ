@@ -105,4 +105,7 @@ CREATE INDEX IF NOT EXISTS idx_pedidos_estado ON pedidos(estado);
 CREATE INDEX IF NOT EXISTS idx_productos_restaurante ON productos(restaurante_id);
 
 
+-- Columna para rastrear última vez que el usuario inició sesión
+ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS last_login TIMESTAMPTZ;
+
 -- Los datos de prueba se insertan desde backend/src/scripts/seed.js

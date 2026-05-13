@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
- <title>TSJ Foodies â€” Admin</title>
+ <title>TSJ Foodies — Admin</title>
  <link rel="stylesheet" href="../../styles/main.css"/>
  <style>
  .section{display:none}.section.active{display:block}
@@ -70,7 +70,7 @@
 <body>
 
 <nav class="navbar">
- <button class="nav-toggle" id="sidebar-toggle" aria-label="Abrir menÃº">
+ <button class="nav-toggle" id="sidebar-toggle" aria-label="Abrir menú">
   <span></span><span></span><span></span>
  </button>
  <div class="navbar-brand">TSJ <span>FOODIES</span>
@@ -146,7 +146,7 @@
  <div id="products-panel" class="products-panel" style="display:none">
  <div class="products-panel-header">
  <div>
- <div class="products-panel-title"> Productos de: <span id="products-rest-name" style="color:var(--primary)">â€”</span></div>
+ <div class="products-panel-title"> Productos de: <span id="products-rest-name" style="color:var(--primary)">—</span></div>
  <div class="products-panel-sub">Agrega, edita o elimina productos de este restaurante</div>
  </div>
  <div style="display:flex;gap:.5rem;flex-wrap:wrap">
@@ -183,7 +183,7 @@
  <div class="modal">
  <div class="modal-header">
  <span class="modal-title" id="modal-rest-title">Nuevo Restaurante</span>
- <button class="modal-close" onclick="cerrarModal('modal-rest')" aria-label="Cerrar">Ã—</button>
+ <button class="modal-close" onclick="cerrarModal('modal-rest')" aria-label="Cerrar">×</button>
  </div>
 
  <!-- Datos del restaurante -->
@@ -193,18 +193,18 @@
  </div>
  <div class="form-group">
  <label class="form-label">Descripcion</label>
- <textarea id="r-desc" class="form-control" placeholder="Breve descripciÃ³n..."></textarea>
+ <textarea id="r-desc" class="form-control" placeholder="Breve descripción..."></textarea>
  </div>
  <div class="form-group">
  <label class="form-label">URL de imagen <small style="color:var(--gray)">(opcional)</small></label>
  <input id="r-img" type="text" class="form-control" placeholder="https://..." autocomplete="off"/>
  </div>
 
- <!-- Datos del propietario â€” solo al CREAR -->
+ <!-- Datos del propietario — solo al CREAR -->
  <div id="grp-propietario" style="display:none">
  <hr style="margin:1.2rem 0;border:none;border-top:1px solid var(--border)"/>
  <p style="font-size:.82rem;font-weight:700;color:var(--dark);margin-bottom:.9rem">
- Datos del propietario (se crea su cuenta automÃ¡ticamente)
+ Datos del propietario (se crea su cuenta automáticamente)
  </p>
  <div class="form-group">
  <label class="form-label">Nombre del propietario <span style="color:var(--danger)">*</span></label>
@@ -215,10 +215,10 @@
  <input id="r-prop-email" type="email" class="form-control" placeholder="za000000@zapopan.tecmm.edu.mx" autocomplete="off"/>
  </div>
  <div class="form-group">
- <label class="form-label">ContraseÃ±a temporal <span style="color:var(--danger)">*</span></label>
- <input id="r-prop-pass" type="text" class="form-control" placeholder="MÃ­nimo 6 caracteres" autocomplete="off"/>
+ <label class="form-label">Contraseña temporal <span style="color:var(--danger)">*</span></label>
+ <input id="r-prop-pass" type="text" class="form-control" placeholder="Mínimo 6 caracteres" autocomplete="off"/>
  <small style="color:var(--gray);font-size:.75rem;margin-top:.25rem;display:block">
- Comparte esta contraseÃ±a con el propietario para que pueda iniciar sesiÃ³n.
+ Comparte esta contraseña con el propietario para que pueda iniciar sesión.
  </small>
  </div>
  </div>
@@ -236,15 +236,15 @@
  <div class="modal">
  <div class="modal-header">
  <span class="modal-title" id="modal-prod-title">Nuevo Producto</span>
- <button class="modal-close" onclick="cerrarModal('modal-prod')" aria-label="Cerrar">Ã—</button>
+ <button class="modal-close" onclick="cerrarModal('modal-prod')" aria-label="Cerrar">×</button>
  </div>
  <div class="form-group">
  <label class="form-label">Nombre <span style="color:var(--danger)">*</span></label>
  <input id="p-nombre" type="text" class="form-control" placeholder="Ej: Taco al pastor" maxlength="100"/>
  </div>
  <div class="form-group">
- <label class="form-label">DescripciÃ³n</label>
- <textarea id="p-desc" class="form-control" placeholder="Ingredientes, presentaciÃ³n, etc."></textarea>
+ <label class="form-label">Descripción</label>
+ <textarea id="p-desc" class="form-control" placeholder="Ingredientes, presentación, etc."></textarea>
  </div>
  <div class="form-row">
  <div class="form-group">
@@ -279,13 +279,13 @@
 <div class="modal-overlay" id="modal-del" role="dialog" aria-modal="true">
  <div class="modal danger">
  <div class="modal-header">
- <span class="modal-title"> Confirmar eliminaciÃ³n</span>
- <button class="modal-close" onclick="cerrarModal('modal-del')" aria-label="Cerrar">Ã—</button>
+ <span class="modal-title"> Confirmar eliminación</span>
+ <button class="modal-close" onclick="cerrarModal('modal-del')" aria-label="Cerrar">×</button>
  </div>
  <p id="modal-del-msg" style="color:var(--gray);line-height:1.65"></p>
  <div class="modal-footer">
  <button class="btn btn-secondary" onclick="cerrarModal('modal-del')">Cancelar</button>
- <button class="btn btn-danger" id="btn-del-confirm" onclick="ejecutarEliminar()"> SÃ­, eliminar</button>
+ <button class="btn btn-danger" id="btn-del-confirm" onclick="ejecutarEliminar()"> Sí, eliminar</button>
  </div>
  </div>
 </div>
@@ -300,11 +300,11 @@ let dataRestaurantes = [];
 let dataPedidos = [];
 let dataProductos = [];
 let filtroRest = null;
-let restEditId = null; // null = crear, nÃºmero = editar
+let restEditId = null; // null = crear, número = editar
 let restSelId = null; // restaurante seleccionado para productos
 let restSelNombre = '';
-let prodEditId = null; // null = crear, nÃºmero = editar
-let delFn = null; // callback de eliminaciÃ³n pendiente
+let prodEditId = null; // null = crear, número = editar
+let delFn = null; // callback de eliminación pendiente
 
 /* â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const adminUser = requireAuth('admin');
@@ -377,13 +377,13 @@ function renderUsuarios(lista) {
 }
 
 async function toggleUsuario(id) {
- if (!confirm('Â¿Cambiar estado del usuario?')) return;
+ if (!confirm('¿Cambiar estado del usuario?')) return;
  try { await Admin.toggleUsuario(id); toast('Estado actualizado', 'success'); cargarUsuarios(); }
  catch(e) { toast(e.message, 'error'); }
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
- RESTAURANTES â€” CRUD
+ RESTAURANTES — CRUD
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function cargarRestaurantes() {
  document.getElementById('rest-grid').innerHTML = '<div class="spinner"></div>';
@@ -419,7 +419,7 @@ function aplicarFiltroRest() {
 function renderRestaurantes(lista) {
  const grid = document.getElementById('rest-grid');
  if (!lista.length) {
- grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon"></div><h3>Sin restaurantes</h3><p>No hay resultados para tu bÃºsqueda</p></div>`;
+ grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon"></div><h3>Sin restaurantes</h3><p>No hay resultados para tu búsqueda</p></div>`;
  return;
  }
  // FIX: usar data-id en botones en vez de strings con nombre en onclick
@@ -432,7 +432,7 @@ function renderRestaurantes(lista) {
  </div>
  <div class="rest-card-body">
  <div class="rest-card-name">${x(r.nombre)}</div>
- <div class="rest-card-owner"> ${x(r.propietario || 'â€”')} Â· ${x(r.email || 'â€”')}</div>
+ <div class="rest-card-owner"> ${x(r.propietario || '—')} · ${x(r.email || '—')}</div>
  <div class="rest-card-meta">
  <span class="badge ${r.aprobado ? 'badge-listo' : 'badge-pendiente'}">${r.aprobado ? ' Aprobado' : ' Pendiente'}</span>
  <span class="badge ${r.activo ? 'badge-en_preparacion' : 'badge-cancelado'}">${r.activo ? ' Activo' : ' Inactivo'}</span>
@@ -447,7 +447,7 @@ function renderRestaurantes(lista) {
  </div>
  </div>`).join('');
 
- // Delegar eventos desde el grid â€” evita problemas con nombres especiales
+ // Delegar eventos desde el grid — evita problemas con nombres especiales
  grid.querySelectorAll('[data-action]').forEach(btn => {
  btn.addEventListener('click', () => {
  const id = parseInt(btn.dataset.id, 10);
@@ -493,11 +493,11 @@ async function abrirModalRestaurante(id) {
  document.getElementById('modal-rest').classList.add('open');
  document.getElementById('r-nombre').focus();
 
- // Cargar usuarios solo al crear (async, despuÃ©s de abrir modal)
+ // Cargar usuarios solo al crear (async, después de abrir modal)
  if (!id) cargarPropietarios();
 }
 
-// cargarPropietarios eliminado â€” el admin ahora crea usuario y restaurante juntos
+// cargarPropietarios eliminado — el admin ahora crea usuario y restaurante juntos
 
 async function guardarRestaurante() {
  const nombre = document.getElementById('r-nombre').value.trim();
@@ -521,7 +521,7 @@ async function guardarRestaurante() {
 
  try {
  if (restEditId) {
- // EDITAR â€” solo nombre, descripciÃ³n e imagen
+ // EDITAR — solo nombre, descripción e imagen
  await Admin.actualizarRestaurante(restEditId, {
  nombre,
  descripcion: desc || null,
@@ -530,14 +530,14 @@ async function guardarRestaurante() {
  toast(' Restaurante actualizado', 'success');
 
  } else {
- // CREAR â€” incluye datos del propietario
+ // CREAR — incluye datos del propietario
  const propNombre = document.getElementById('r-prop-nombre').value.trim();
  const propEmail = document.getElementById('r-prop-email').value.trim();
  const propPass = document.getElementById('r-prop-pass').value;
 
  if (!propNombre) { errEl.textContent = 'El nombre del propietario es obligatorio.'; errEl.style.display = 'block'; document.getElementById('r-prop-nombre').focus(); btn.disabled=false; btn.textContent='Guardar'; return; }
  if (!propEmail) { errEl.textContent = 'El correo del propietario es obligatorio.'; errEl.style.display = 'block'; document.getElementById('r-prop-email').focus(); btn.disabled=false; btn.textContent='Guardar'; return; }
- if (!propPass || propPass.length < 6) { errEl.textContent = 'La contraseÃ±a debe tener mÃ­nimo 6 caracteres.'; errEl.style.display = 'block'; document.getElementById('r-prop-pass').focus(); btn.disabled=false; btn.textContent='Guardar'; return; }
+ if (!propPass || propPass.length < 6) { errEl.textContent = 'La contraseña debe tener mínimo 6 caracteres.'; errEl.style.display = 'block'; document.getElementById('r-prop-pass').focus(); btn.disabled=false; btn.textContent='Guardar'; return; }
 
  await Admin.crearRestaurante({
  nombre,
@@ -568,15 +568,15 @@ async function aprobar(id) {
 
 async function toggleRest(id, activo) {
  const msg = activo ? 'pausar' : 'activar';
- if (!confirm(`Â¿Deseas ${msg} este restaurante?`)) return;
+ if (!confirm(`¿Deseas ${msg} este restaurante?`)) return;
  try { await Admin.toggleRestaurante(id); toast('Estado actualizado', 'success'); await cargarRestaurantes(); }
  catch(e) { toast(e.message, 'error'); }
 }
 
 function pedirEliminarRest(id, nombre) {
  document.getElementById('modal-del-msg').innerHTML =
- `Â¿Eliminar el restaurante <strong>"${x(nombre)}"</strong>?<br><br>
- <small style="color:var(--gray)">Se desactivarÃ¡ del sistema. El historial de pedidos se conserva.</small>`;
+ `¿Eliminar el restaurante <strong>"${x(nombre)}"</strong>?<br><br>
+ <small style="color:var(--gray)">Se desactivará del sistema. El historial de pedidos se conserva.</small>`;
  delFn = async () => {
  await Admin.eliminarRestaurante(id);
  toast(' Restaurante eliminado', 'success');
@@ -587,7 +587,7 @@ function pedirEliminarRest(id, nombre) {
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
- PRODUCTOS â€” CRUD
+ PRODUCTOS — CRUD
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 async function seleccionarRestaurante(id, nombre) {
  restSelId = id; restSelNombre = nombre;
@@ -619,7 +619,7 @@ async function cargarProductos() {
 function renderProductos(lista) {
  if (!lista.length) {
  document.getElementById('products-list').innerHTML =
- '<div class="products-empty"> Sin productos todavÃ­a.<br>Agrega el primero con el botÃ³n de arriba.</div>';
+ '<div class="products-empty"> Sin productos todavía.<br>Agrega el primero con el botón de arriba.</div>';
  return;
  }
  // FIX: usar data-id en botones, no pasar nombre en onclick
@@ -628,7 +628,7 @@ function renderProductos(lista) {
  <span class="product-emoji"></span>
  <div class="product-info">
  <div class="product-name">${x(p.nombre)}</div>
- <div class="product-meta">${x(p.descripcion || 'Sin descripciÃ³n')} Â· ${p.tiempo_estimado} min Â· ${p.disponible ? ' Disponible' : ' No disponible'}</div>
+ <div class="product-meta">${x(p.descripcion || 'Sin descripción')} · ${p.tiempo_estimado} min · ${p.disponible ? ' Disponible' : ' No disponible'}</div>
  </div>
  <div class="product-price">$${parseFloat(p.precio).toFixed(2)}</div>
  <div class="product-actions">
@@ -638,7 +638,7 @@ function renderProductos(lista) {
  </div>`).join('');
  document.getElementById('products-list').innerHTML = html;
 
- // DelegaciÃ³n de eventos â€” FIX para nombres con caracteres especiales
+ // Delegación de eventos — FIX para nombres con caracteres especiales
  document.querySelectorAll('[data-prod-action]').forEach(btn => {
  btn.addEventListener('click', () => {
  const pid = parseInt(btn.dataset.pid, 10);
@@ -715,7 +715,7 @@ async function guardarProducto() {
 }
 
 function pedirEliminarProd(id, nombre) {
- document.getElementById('modal-del-msg').innerHTML = `Â¿Eliminar el producto <strong>"${x(nombre)}"</strong>?`;
+ document.getElementById('modal-del-msg').innerHTML = `¿Eliminar el producto <strong>"${x(nombre)}"</strong>?`;
  delFn = async () => {
  await Admin.eliminarProducto(restSelId, id);
  toast(' Producto eliminado', 'success');
@@ -733,10 +733,10 @@ async function ejecutarEliminar() {
  btn.disabled = true; btn.textContent = ' Eliminando...';
  try { await delFn(); cerrarModal('modal-del'); }
  catch(e) { toast(e.message, 'error'); }
- finally { btn.disabled = false; btn.textContent = ' SÃ­, eliminar'; delFn = null; }
+ finally { btn.disabled = false; btn.textContent = ' Sí, eliminar'; delFn = null; }
 }
 
-// Cerrar al click fuera â€” solo modal de confirmaciÃ³n, no formularios
+// Cerrar al click fuera — solo modal de confirmación, no formularios
 document.getElementById('modal-del').addEventListener('click', e => {
  if (e.target === document.getElementById('modal-del')) cerrarModal('modal-del');
 });

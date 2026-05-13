@@ -171,7 +171,9 @@
  }
  grid.innerHTML = lista.map(r => `
  <div class="card" data-rest-id="${r.id}" style="cursor:pointer">
- <div class="card-img-placeholder"></div>
+ ${r.imagen_url && r.imagen_url.startsWith('http')
+ ? `<img src="${escHtml(r.imagen_url)}" class="card-img" style="height:140px;object-fit:cover" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'card-img-placeholder'}))" alt="${escHtml(r.nombre)}"/>`
+ : `<div class="card-img-placeholder"></div>`}
  <div class="card-body">
  <div class="card-title">${escHtml(r.nombre)}</div>
  <div class="card-desc">${escHtml(r.descripcion || 'Haz clic para ver el menú')}</div>
@@ -361,6 +363,15 @@
 
  function closeCheckout() { document.getElementById('checkout-modal').classList.add('hidden'); }
 
+  function bloquearBotonesPago() {
+    const btnMp  = document.getElementById('btn-mp');
+    const btnEfec = document.getElementById('btn-efectivo');
+    btnMp.disabled  = true;
+    btnEfec.disabled = true;
+    btnMp.style.opacity   = '0.65';
+    btnEfec.style.opacity = '0.65';
+  }
+
   // ── Pago con Mercado Pago Checkout Pro ──────────
   async function pagarConMP() {
     const btn = document.getElementById('btn-mp');
@@ -369,22 +380,25 @@
     if (!items.length) return;
     const notas = document.getElementById('notas-pedido').value;
     const mpLabel = document.getElementById('btn-mp-label');
-    btn.disabled = true;
+    bloquearBotonesPago();
     if (mpLabel) mpLabel.textContent = 'Creando orden...';
     try {
-      const { checkout_url } = await MP.crearPreferencia({
+      const result = await MP.crearPreferencia({
         restaurante_id: items[0].restaurante_id,
         items: items.map(i => ({ producto_id: i.producto_id, cantidad: i.cantidad })),
         notas
       });
+      if (!result) return; // api() ya redirigió a login (401/403)
       Carrito.clear();
       actualizarCartBadge();
-      window.location.href = checkout_url;
+      window.location.href = result.checkout_url;
     } catch(e) {
       toast(e.message || 'No se pudo iniciar el pago. Intenta de nuevo.', 'error');
-      if (!e.message.includes('no está disponible')) {
-        btn.disabled = false;
+      if (!e.message?.includes('no está disponible')) {
+        btn.disabled = false; btn.style.opacity = '1';
         if (mpLabel) mpLabel.textContent = 'Pagar con Mercado Pago';
+        const btnEfec = document.getElementById('btn-efectivo');
+        btnEfec.disabled = false; btnEfec.style.opacity = '1';
       }
     }
   }
@@ -395,14 +409,19 @@
     if (!items.length) return;
     const notas = document.getElementById('notas-pedido').value;
     const btn   = document.getElementById('btn-efectivo');
-    btn.disabled = true; btn.textContent = '⏳ Procesando...';
+    bloquearBotonesPago();
+    btn.textContent = '⏳ Procesando...';
     try {
-      const { pedido_id } = await Pedidos.create({
+      const pedidoRes = await Pedidos.create({
         restaurante_id: items[0].restaurante_id,
         items: items.map(i => ({ producto_id: i.producto_id, cantidad: i.cantidad })),
         notas
       });
-      const { comprobante } = await Pagos.procesar({ pedido_id, metodo: 'efectivo' });
+      if (!pedidoRes) return; // api() ya redirigió a login
+      const { pedido_id } = pedidoRes;
+      const pagoRes = await Pagos.procesar({ pedido_id, metodo: 'efectivo' });
+      if (!pagoRes) return;
+      const { comprobante } = pagoRes;
       Carrito.clear();
       actualizarCartBadge();
       closeCheckout();
@@ -410,7 +429,9 @@
     } catch(e) {
       toast(e.message, 'error');
     } finally {
-      btn.disabled = false; btn.textContent = 'Pagar en efectivo en mostrador';
+      btn.disabled = false; btn.textContent = 'Pagar en efectivo en mostrador'; btn.style.opacity = '1';
+      const btnMp2 = document.getElementById('btn-mp');
+      btnMp2.disabled = false; btnMp2.style.opacity = '1';
     }
   }
 

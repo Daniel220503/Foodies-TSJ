@@ -12,14 +12,17 @@ async function create(req, res) {
     let total = 0;
     const detalles = [];
     for (const item of items) {
+      const cant = parseInt(item.cantidad, 10);
+      if (!cant || cant < 1 || cant > 100)
+        throw new Error('Cantidad inválida en uno de los productos (debe ser entre 1 y 100)');
       const { rows } = await client.query(
         'SELECT id, precio FROM productos WHERE id=$1 AND disponible=TRUE AND deleted_at IS NULL',
         [item.producto_id]
       );
       if (!rows.length) throw new Error(`Producto ${item.producto_id} no disponible`);
-      const sub = parseFloat(rows[0].precio) * item.cantidad;
+      const sub = parseFloat(rows[0].precio) * cant;
       total += sub;
-      detalles.push({ ...item, precio_unitario: rows[0].precio, subtotal: sub });
+      detalles.push({ ...item, cantidad: cant, precio_unitario: rows[0].precio, subtotal: sub });
     }
 
     // Prioridad dinámica: más pedidos activos = número mayor

@@ -355,7 +355,49 @@ tr:hover td { background: #f9fafb; }
 .comprobante-row    { display: flex; justify-content: space-between; padding: .3rem 0; font-size: .9rem; }
 .comprobante-total  { font-size: 1.1rem; font-weight: 700; border-top: 2px solid var(--border); margin-top: .5rem; padding-top: .5rem; }
 
-/* ── SEARCH BAR ─────────────────────────────── */
+/* ── ANIMACIONES ─────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pageFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes modalIn {
+  from { transform: scale(.93) translateY(-10px); opacity: 0; }
+  to   { transform: scale(1)   translateY(0);     opacity: 1; }
+}
+
+body { animation: pageFadeIn .28s ease; }
+
+/* Entrada de cards con escalonado */
+.card { animation: fadeInUp .35s ease both; }
+.card:nth-child(1) { animation-delay: .04s; }
+.card:nth-child(2) { animation-delay: .08s; }
+.card:nth-child(3) { animation-delay: .12s; }
+.card:nth-child(4) { animation-delay: .16s; }
+.card:nth-child(5) { animation-delay: .20s; }
+.card:nth-child(6) { animation-delay: .24s; }
+.card:nth-child(n+7) { animation-delay: .27s; }
+
+/* Stat cards */
+.stat-card { animation: fadeInUp .38s ease both; }
+.stat-card:nth-child(1) { animation-delay: .05s; }
+.stat-card:nth-child(2) { animation-delay: .10s; }
+.stat-card:nth-child(3) { animation-delay: .15s; }
+.stat-card:nth-child(4) { animation-delay: .20s; }
+
+/* Auth card de login */
+.auth-card { animation: fadeInUp .4s cubic-bezier(.34,1.56,.64,1) both; }
+
+/* Modal: entrada con escala + deslizamiento */
+.modal-overlay:not(.hidden) .modal,
+.modal-overlay.open .modal {
+  animation: modalIn .25s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+/* SEARCH BAR ─────────────────────────────── */
 .search-bar {
   display: flex; align-items: center; gap: .6rem;
   background: var(--white); border: 1.5px solid var(--border);

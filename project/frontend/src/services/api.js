@@ -29,6 +29,11 @@ async function api(method, path, body = null) {
  if (body) opts.body = JSON.stringify(body);
  const res = await fetch(API_URL + path, opts);
  const data = await res.json().catch(() => ({}));
+ if (res.status === 401 || res.status === 403) {
+   clearSession();
+   window.location.href = '/login.html';
+   return null;
+ }
  if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
  return data;
 }
@@ -150,6 +155,13 @@ function requireAuth(rol = null) {
  }
  return user;
 }
+
+// Detecta cambio de sesión desde otra pestaña y recarga para re-validar auth
+window.addEventListener('storage', function(e) {
+ if (e.key === 'tsj_token' || e.key === 'tsj_user') {
+   window.location.reload();
+ }
+});
 
 // ── Toast ──────────────────────────────────────
 function toast(msg, type = 'default') {
