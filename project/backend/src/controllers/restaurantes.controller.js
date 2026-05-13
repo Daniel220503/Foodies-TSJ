@@ -52,17 +52,24 @@ async function create(req, res) {
 async function update(req, res) {
   const { nombre, descripcion, imagen_url } = req.body;
   try {
+    const img = 'imagen_url' in req.body
+      ? ((imagen_url || '').startsWith('http') ? imagen_url : null)
+      : undefined;
+
+    const sets = ['updated_at = NOW()'];
+    const vals = [];
+    let i = 1;
+    if (nombre     !== undefined) { sets.unshift(`nombre=$${i++}`);      vals.push(nombre      || null); }
+    if (descripcion !== undefined) { sets.unshift(`descripcion=$${i++}`); vals.push(descripcion || null); }
+    if (img        !== undefined) { sets.unshift(`imagen_url=$${i++}`);  vals.push(img); }
+
+    vals.push(req.params.id, req.user.id);
     await db.query(
-      `UPDATE restaurantes SET
-        nombre      = COALESCE($1, nombre),
-        descripcion = COALESCE($2, descripcion),
-        imagen_url  = COALESCE($3, imagen_url),
-        updated_at  = NOW()
-       WHERE id=$4 AND usuario_id=$5`,
-      [nombre||null, descripcion||null, imagen_url||null, req.params.id, req.user.id]
+      `UPDATE restaurantes SET ${sets.join(', ')} WHERE id=$${i++} AND usuario_id=$${i}`,
+      vals
     );
     res.json({ message: 'Actualizado' });
-  } catch { res.status(500).json({ error: 'Error al actualizar' }); }
+  } catch(e) { console.error('update restaurante:', e.message); res.status(500).json({ error: 'Error al actualizar' }); }
 }
 
 module.exports = { getAll, getById, getMenu, create, update };

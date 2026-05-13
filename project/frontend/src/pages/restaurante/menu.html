@@ -36,6 +36,18 @@
  </div>
  </div>
 
+ <!-- Perfil del restaurante -->
+ <div id="rest-profile-card" class="card" style="display:flex;align-items:center;gap:1.2rem;padding:1rem 1.2rem;margin-bottom:1.2rem">
+ <div id="rest-logo-wrap" style="width:72px;height:72px;border-radius:10px;overflow:hidden;background:var(--light);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2rem">
+ 🍽️
+ </div>
+ <div style="flex:1;min-width:0">
+ <div style="font-weight:700;font-size:1.05rem" id="rest-profile-name">...</div>
+ <div style="font-size:.85rem;color:var(--gray);margin-top:.2rem">Imagen de tu marca visible para los alumnos</div>
+ </div>
+ <button class="btn btn-secondary btn-sm" onclick="abrirModalImagen()">Cambiar imagen</button>
+ </div>
+
  <!-- Buscador -->
  <div class="search-bar">
  <span></span>
@@ -138,16 +150,100 @@
  </div>
 </div>
 
+<!-- Modal: Imagen del restaurante -->
+<div id="img-modal" class="modal-overlay hidden">
+ <div class="modal" style="max-width:420px">
+ <div class="modal-header">
+ <h3>Imagen del restaurante</h3>
+ <button class="modal-close" onclick="cerrarModalImagen()">×</button>
+ </div>
+ <div class="modal-body">
+ <div class="form-group">
+ <label class="form-label">URL de la imagen</label>
+ <input id="rest-img-url" type="url" class="form-control" placeholder="https://..." oninput="previewImg()" />
+ </div>
+ <div id="rest-img-preview" style="width:100%;height:160px;border-radius:8px;overflow:hidden;background:var(--light);display:flex;align-items:center;justify-content:center;margin-top:.5rem">
+ <span style="color:var(--gray);font-size:.9rem">Vista previa</span>
+ </div>
+ <p style="font-size:.82rem;color:var(--gray);margin-top:.6rem">Usa una URL pública (ej. Imgur, Google Drive público, tu sitio). Formatos: JPG, PNG, WebP.</p>
+ </div>
+ <div class="modal-footer">
+ <button class="btn btn-secondary" onclick="cerrarModalImagen()">Cancelar</button>
+ <button class="btn btn-primary" id="btn-guardar-img" onclick="guardarImagen()">Guardar</button>
+ </div>
+ </div>
+</div>
+
 <script src="../../services/api.js"></script>
 <script>
  let user, menuData = { categorias: [], productos: [] };
  let productoAEliminar = null;
  let filtroCategoria = null;
+ let restInfo = null;
 
  user = requireAuth('restaurante');
  if (user) {
  document.getElementById('rest-name').textContent = user.nombre.split(' ')[0];
+ cargarInfoRestaurante();
  cargarMenu();
+ }
+
+ async function cargarInfoRestaurante() {
+ const rid = user.restaurante_id;
+ if (!rid) return;
+ try {
+ restInfo = await Restaurantes.getById(rid);
+ document.getElementById('rest-profile-name').textContent = restInfo.nombre || user.nombre;
+ actualizarLogoCard(restInfo.imagen_url);
+ } catch(e) { document.getElementById('rest-profile-name').textContent = user.nombre; }
+ }
+
+ function actualizarLogoCard(url) {
+ const wrap = document.getElementById('rest-logo-wrap');
+ if (url && url.startsWith('http')) {
+ wrap.innerHTML = `<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='🍽️'" alt="Logo"/>`;
+ } else {
+ wrap.innerHTML = '🍽️';
+ }
+ }
+
+ function abrirModalImagen() {
+ const url = restInfo?.imagen_url || '';
+ document.getElementById('rest-img-url').value = url.startsWith('http') ? url : '';
+ previewImg();
+ document.getElementById('img-modal').classList.remove('hidden');
+ }
+
+ function cerrarModalImagen() {
+ document.getElementById('img-modal').classList.add('hidden');
+ }
+
+ function previewImg() {
+ const url = document.getElementById('rest-img-url').value.trim();
+ const prev = document.getElementById('rest-img-preview');
+ if (url.startsWith('http')) {
+ prev.innerHTML = `<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover" onerror="this.innerHTML='<span style=color:var(--danger)>No se pudo cargar la imagen</span>'" alt="Preview"/>`;
+ } else {
+ prev.innerHTML = '<span style="color:var(--gray);font-size:.9rem">Vista previa</span>';
+ }
+ }
+
+ async function guardarImagen() {
+ const url = document.getElementById('rest-img-url').value.trim();
+ const imgUrl = url.startsWith('http') ? url : null;
+ const btn = document.getElementById('btn-guardar-img');
+ btn.disabled = true; btn.textContent = 'Guardando...';
+ try {
+ await Restaurantes.update(user.restaurante_id, { imagen_url: imgUrl });
+ if (restInfo) restInfo.imagen_url = imgUrl;
+ actualizarLogoCard(imgUrl);
+ toast('Imagen actualizada', 'success');
+ cerrarModalImagen();
+ } catch(e) {
+ toast(e.message || 'Error al guardar imagen', 'error');
+ } finally {
+ btn.disabled = false; btn.textContent = 'Guardar';
+ }
  }
 
  async function cargarMenu() {

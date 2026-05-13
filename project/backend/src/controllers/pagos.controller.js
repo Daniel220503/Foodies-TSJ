@@ -1,7 +1,9 @@
 const db = require('../config/db');
 
 function generarFolio() {
-  return `TSJ-${Math.floor(10000 + Math.random() * 90000)}`;
+  const ts   = Date.now().toString(36).toUpperCase();
+  const rand = Math.random().toString(36).substr(2, 4).toUpperCase();
+  return `TSJ-${ts}${rand}`;
 }
 
 async function procesarPago(req, res) {
@@ -13,8 +15,9 @@ async function procesarPago(req, res) {
   try {
     await client.query('BEGIN');
 
+    // FOR UPDATE previene que dos solicitudes simultáneas procesen el mismo pedido
     const { rows: pedidos } = await client.query(
-      'SELECT * FROM pedidos WHERE id=$1 AND usuario_id=$2', [pedido_id, req.user.id]
+      'SELECT * FROM pedidos WHERE id=$1 AND usuario_id=$2 FOR UPDATE', [pedido_id, req.user.id]
     );
     if (!pedidos.length) throw new Error('Pedido no encontrado');
     const pedido = pedidos[0];

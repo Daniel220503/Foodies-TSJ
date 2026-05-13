@@ -18,8 +18,8 @@ async function register(req, res) {
   if (password.length < 6)
     return res.status(400).json({ error: 'La contraseña debe tener mínimo 6 caracteres' });
 
-  // Solo se permiten estos dos roles en el registro público
-  const rolFinal = rol === 'restaurante' ? 'restaurante' : 'cliente';
+  // Solo alumnos pueden registrarse; los restaurantes los crea el admin
+  const rolFinal = 'cliente';
 
   try {
     const existe = await db.query('SELECT id FROM usuarios WHERE email=$1', [email.toLowerCase()]);
@@ -63,6 +63,8 @@ async function login(req, res) {
       );
       if (r.rows.length) restaurante_id = r.rows[0].id;
     }
+
+    await db.query('UPDATE usuarios SET last_login=NOW() WHERE id=$1', [user.id]);
 
     const token = jwt.sign(
       { id: user.id, nombre: user.nombre, email: user.email, rol: user.rol, restaurante_id },

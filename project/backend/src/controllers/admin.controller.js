@@ -175,8 +175,8 @@ async function crearProducto(req, res) {
     const { rows } = await db.query(`
       INSERT INTO productos (restaurante_id,categoria_id,nombre,descripcion,precio,imagen_url,tiempo_estimado)
       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id
-    `, [rid, categoria_id ? parseInt(categoria_id) : null, nombre.trim(),
-        descripcion?.trim() || null, precioNum, imagen_url || null, parseInt(tiempo_estimado)||15]);
+    `, [rid, categoria_id ? parseInt(categoria_id, 10) : null, nombre.trim(),
+        descripcion?.trim() || null, precioNum, imagen_url || null, parseInt(tiempo_estimado, 10)||15]);
     res.status(201).json({ id: rows[0].id, message: 'Producto creado' });
   } catch(e) { console.error('crearProducto:', e.message); res.status(500).json({ error: 'Error al crear producto' }); }
 }
@@ -195,7 +195,7 @@ async function actualizarProducto(req, res) {
         categoria_id=$5, tiempo_estimado=$6, disponible=$7
       WHERE id=$8 AND restaurante_id=$9 AND deleted_at IS NULL
     `, [nombre.trim(), descripcion?.trim()||null, precioNum, imagen_url||null,
-        categoria_id ? parseInt(categoria_id) : null, parseInt(tiempo_estimado)||15,
+        categoria_id ? parseInt(categoria_id, 10) : null, parseInt(tiempo_estimado, 10)||15,
         disponible === true || disponible === 'true', pid, rid]);
     if (!rowCount) return res.status(404).json({ error: 'Producto no encontrado' });
     res.json({ message: 'Producto actualizado' });
@@ -206,7 +206,7 @@ async function eliminarProducto(req, res) {
   try {
     const { rowCount } = await db.query(
       'UPDATE productos SET deleted_at=NOW() WHERE id=$1 AND restaurante_id=$2 AND deleted_at IS NULL',
-      [parseInt(req.params.pid), parseInt(req.params.id)]
+      [parseInt(req.params.pid, 10), parseInt(req.params.id, 10)]
     );
     if (!rowCount) return res.status(404).json({ error: 'Producto no encontrado' });
     res.json({ message: 'Producto eliminado' });

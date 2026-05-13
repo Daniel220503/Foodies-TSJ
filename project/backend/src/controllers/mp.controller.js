@@ -47,11 +47,14 @@ async function crearPreferencia(req, res) {
 
     let total = 0;
     const detalles = items.map(item => {
+      const cant = parseInt(item.cantidad, 10);
+      if (!cant || cant < 1 || cant > 100)
+        throw new Error('Cantidad inválida en el carrito (debe ser entre 1 y 100)');
       const prod = productos.find(p => p.id === item.producto_id);
       if (!prod) throw new Error('Uno de los productos ya no está disponible. Actualiza tu carrito e intenta de nuevo.');
-      const subtotal = parseFloat(prod.precio) * item.cantidad;
+      const subtotal = parseFloat(prod.precio) * cant;
       total += subtotal;
-      return { producto_id: item.producto_id, cantidad: item.cantidad, nombre: prod.nombre, precio: prod.precio, subtotal };
+      return { producto_id: item.producto_id, cantidad: cant, nombre: prod.nombre, precio: prod.precio, subtotal };
     });
 
     // Crear pedido
@@ -74,26 +77,26 @@ async function crearPreferencia(req, res) {
 
     // Llamar a MP ANTES de hacer COMMIT para poder hacer ROLLBACK si falla
     const baseUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
+    const isLocalhost = /localhost|127\.0\.0\.1/.test(baseUrl);
     const preference = new Preference(mpClient);
-    const pref = await preference.create({
-      body: {
-        items: detalles.map(d => ({
-          id: String(d.producto_id),
-          title: d.nombre,
-          quantity: d.cantidad,
-          unit_price: parseFloat(d.precio),
-          currency_id: 'MXN'
-        })),
-        external_reference: String(pedido.id),
-        back_urls: {
-          success: `${baseUrl}/src/pages/alumno/pago-resultado.html`,
-          failure: `${baseUrl}/src/pages/alumno/pago-resultado.html`,
-          pending: `${baseUrl}/src/pages/alumno/pago-resultado.html`
-        },
-        auto_return: 'approved',
-        statement_descriptor: 'TSJ Foodies'
-      }
-    });
+    const prefBody = {
+      items: detalles.map(d => ({
+        id: String(d.producto_id),
+        title: d.nombre,
+        quantity: d.cantidad,
+        unit_price: parseFloat(parseFloat(d.precio).toFixed(2)),
+        currency_id: 'MXN'
+      })),
+      external_reference: String(pedido.id),
+      back_urls: {
+        success: `${baseUrl}/src/pages/alumno/pago-resultado.html`,
+        failure: `${baseUrl}/src/pages/alumno/pago-resultado.html`,
+        pending: `${baseUrl}/src/pages/alumno/pago-resultado.html`
+      },
+      statement_descriptor: 'TSJ Foodies'
+    };
+    if (!isLocalhost) prefBody.auto_return = 'approved';
+    const pref = await preference.create({ body: prefBody });
 
     // MP OK → guardar referencia y hacer COMMIT
     await client.query('UPDATE pagos SET referencia=$1 WHERE pedido_id=$2', [pref.id, pedido.id]);
@@ -142,7 +145,7 @@ async function verificarPago(req, res) {
     const payment = new Payment(mpClient);
     const mpPayment = await payment.get({ id: payment_id });
 
-    if (String(mpPayment.external_reference) !== String(pedido_id))
+    if (parseInt(mpPayment.external_reference, 10) !== pedido_id)
       throw new Error('La información del pago no corresponde a este pedido. Contacta a soporte si el cargo fue realizado.');
 
     const estadoMp   = mpPayment.status; // approved | pending | rejected
