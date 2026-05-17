@@ -55,7 +55,9 @@ async function inactivarAlumnosInactivos() {
 }
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, async () => {
+
+// Agregamos '0.0.0.0' como segundo parámetro
+app.listen(PORT, '0.0.0.0', async () => {
   console.log(`✅ TSJ Foodies API en puerto ${PORT}`);
   const seed = require('./scripts/seed');
   await seed();
