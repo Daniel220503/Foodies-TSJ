@@ -18,9 +18,10 @@ server {
         try_files $uri $uri/ $uri.html =404;
     }
 
-    # Proxy al backend API
+   # Proxy al backend API
     location /api/ {
-        proxy_pass ${BACKEND_URL};
+        # Fíjate cómo agregamos http:// aquí
+        proxy_pass http://${BACKEND_URL};
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
