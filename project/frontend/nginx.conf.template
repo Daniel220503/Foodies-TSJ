@@ -20,8 +20,7 @@ server {
 
    # Proxy al backend API
     location /api/ {
-        # Fíjate cómo agregamos http:// aquí
-        proxy_pass http://${BACKEND_URL};
+        proxy_pass ${BACKEND_URL};
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

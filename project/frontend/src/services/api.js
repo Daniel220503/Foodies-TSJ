@@ -38,6 +38,24 @@ async function api(method, path, body = null) {
  return data;
 }
 
+async function uploadFile(path, file) {
+ const form = new FormData();
+ form.append('image', file);
+ const res = await fetch(API_URL + path, {
+ method: 'POST',
+ headers: { ...authHeader() },
+ body: form
+ });
+ const data = await res.json().catch(() => ({}));
+ if ((res.status === 401 || res.status === 403) && !path.startsWith('/auth/')) {
+   clearSession();
+   window.location.href = '/login.html';
+   return null;
+ }
+ if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+ return data;
+}
+
 // ── Auth ───────────────────────────────────────
 const Auth = {
  register: (d) => api('POST', '/auth/register', d),
@@ -85,6 +103,10 @@ const Pagos = {
 const MP = {
   crearPreferencia: (d) => api('POST', '/mp/preferencia', d),
   verificar:        (d) => api('POST', '/mp/verificar', d)
+};
+
+const Uploads = {
+ image: (file) => uploadFile('/uploads/image', file)
 };
 
 // ── Comprobantes ───────────────────────────────

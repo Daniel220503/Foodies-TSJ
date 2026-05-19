@@ -319,7 +319,7 @@
  onchange="Carrito.updateCantidad(${i.producto_id},+this.value);actualizarCartBadge();openCartModal()"/>
  </td>
  <td><button class="btn btn-danger btn-sm"
- onclick="Carrito.remove(${i.producto_id});actualizarCartBadge();openCartModal()"></button></td>
+ onclick="Carrito.remove(${i.producto_id});actualizarCartBadge();openCartModal()" title="Eliminar">🗑 Eliminar</button></td>
  </tr>`).join('')}
  </tbody>
  </table>

@@ -95,8 +95,16 @@
  </select>
  </div>
  <div class="form-group">
+ <label class="form-label">Subir imagen del platillo</label>
+ <input id="prod-imagen-file" type="file" class="form-control" accept="image/png,image/jpeg,image/webp" onchange="previewProductoImg()" />
+ </div>
+ <div style="text-align:center;color:var(--gray);font-size:.82rem;margin:.2rem 0 .8rem">o pega una URL publica</div>
+ <div class="form-group">
  <label class="form-label">URL de imagen (opcional)</label>
- <input id="prod-imagen" type="url" class="form-control" placeholder="https://..." />
+ <input id="prod-imagen" type="url" class="form-control" placeholder="https://..." oninput="previewProductoImg()" />
+ </div>
+ <div id="prod-img-preview" style="width:100%;height:140px;border-radius:8px;overflow:hidden;background:var(--light);display:flex;align-items:center;justify-content:center;margin-bottom:1rem">
+ <span style="color:var(--gray);font-size:.9rem">Vista previa</span>
  </div>
  <div class="form-group" id="prod-disponible-group" style="display:none">
  <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer">
@@ -159,13 +167,18 @@
  </div>
  <div class="modal-body">
  <div class="form-group">
+ <label class="form-label">Subir imagen desde tu dispositivo</label>
+ <input id="rest-img-file" type="file" class="form-control" accept="image/png,image/jpeg,image/webp" onchange="previewImg()" />
+ </div>
+ <div style="text-align:center;color:var(--gray);font-size:.82rem;margin:.2rem 0 .8rem">o pega una URL publica</div>
+ <div class="form-group">
  <label class="form-label">URL de la imagen</label>
  <input id="rest-img-url" type="url" class="form-control" placeholder="https://..." oninput="previewImg()" />
  </div>
  <div id="rest-img-preview" style="width:100%;height:160px;border-radius:8px;overflow:hidden;background:var(--light);display:flex;align-items:center;justify-content:center;margin-top:.5rem">
  <span style="color:var(--gray);font-size:.9rem">Vista previa</span>
  </div>
- <p style="font-size:.82rem;color:var(--gray);margin-top:.6rem">Usa una URL pública (ej. Imgur, Google Drive público, tu sitio). Formatos: JPG, PNG, WebP.</p>
+ <p style="font-size:.82rem;color:var(--gray);margin-top:.6rem">Puedes subir JPG, PNG o WebP de hasta 3 MB. Tambien puedes usar una URL publica.</p>
  </div>
  <div class="modal-footer">
  <button class="btn btn-secondary" onclick="cerrarModalImagen()">Cancelar</button>
@@ -209,6 +222,7 @@
 
  function abrirModalImagen() {
  const url = restInfo?.imagen_url || '';
+ document.getElementById('rest-img-file').value = '';
  document.getElementById('rest-img-url').value = url.startsWith('http') ? url : '';
  previewImg();
  document.getElementById('img-modal').classList.remove('hidden');
@@ -219,9 +233,13 @@
  }
 
  function previewImg() {
+ const file = document.getElementById('rest-img-file').files[0];
  const url = document.getElementById('rest-img-url').value.trim();
  const prev = document.getElementById('rest-img-preview');
- if (url.startsWith('http')) {
+ if (file) {
+ const objectUrl = URL.createObjectURL(file);
+ prev.innerHTML = `<img src="${objectUrl}" style="width:100%;height:100%;object-fit:cover" onload="URL.revokeObjectURL(this.src)" alt="Preview"/>`;
+ } else if (url.startsWith('http')) {
  prev.innerHTML = `<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover" onerror="this.innerHTML='<span style=color:var(--danger)>No se pudo cargar la imagen</span>'" alt="Preview"/>`;
  } else {
  prev.innerHTML = '<span style="color:var(--gray);font-size:.9rem">Vista previa</span>';
@@ -229,11 +247,19 @@
  }
 
  async function guardarImagen() {
+ const file = document.getElementById('rest-img-file').files[0];
  const url = document.getElementById('rest-img-url').value.trim();
- const imgUrl = url.startsWith('http') ? url : null;
+ let imgUrl = url.startsWith('http') ? url : null;
  const btn = document.getElementById('btn-guardar-img');
  btn.disabled = true; btn.textContent = 'Guardando...';
  try {
+ if (file) {
+ if (file.size > 3 * 1024 * 1024) throw new Error('La imagen no debe pesar mas de 3 MB');
+ btn.textContent = 'Subiendo...';
+ const uploaded = await Uploads.image(file);
+ imgUrl = uploaded.url;
+ btn.textContent = 'Guardando...';
+ }
  await Restaurantes.update(user.restaurante_id, { imagen_url: imgUrl });
  if (restInfo) restInfo.imagen_url = imgUrl;
  actualizarLogoCard(imgUrl);
@@ -330,7 +356,9 @@
  document.getElementById('prod-precio').value = '';
  document.getElementById('prod-tiempo').value = '15';
  document.getElementById('prod-categoria').value = '';
+ document.getElementById('prod-imagen-file').value = '';
  document.getElementById('prod-imagen').value = '';
+ previewProductoImg();
  document.getElementById('prod-disponible-group').style.display = 'none';
  document.getElementById('producto-modal').classList.remove('hidden');
  }
@@ -345,7 +373,9 @@
  document.getElementById('prod-precio').value = p.precio;
  document.getElementById('prod-tiempo').value = p.tiempo_estimado;
  document.getElementById('prod-categoria').value = p.categoria_id || '';
+ document.getElementById('prod-imagen-file').value = '';
  document.getElementById('prod-imagen').value = p.imagen_url || '';
+ previewProductoImg();
  document.getElementById('prod-disponible').checked = p.disponible;
  document.getElementById('prod-disponible-group').style.display = 'block';
  document.getElementById('producto-modal').classList.remove('hidden');
@@ -353,23 +383,45 @@
 
  function closeProductoModal() { document.getElementById('producto-modal').classList.add('hidden'); }
 
+ function previewProductoImg() {
+ const file = document.getElementById('prod-imagen-file').files[0];
+ const url = document.getElementById('prod-imagen').value.trim();
+ const prev = document.getElementById('prod-img-preview');
+ if (file) {
+ const objectUrl = URL.createObjectURL(file);
+ prev.innerHTML = `<img src="${objectUrl}" style="width:100%;height:100%;object-fit:cover" onload="URL.revokeObjectURL(this.src)" alt="Preview"/>`;
+ } else if (url.startsWith('http')) {
+ prev.innerHTML = `<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='Vista previa'" alt="Preview"/>`;
+ } else {
+ prev.innerHTML = '<span style="color:var(--gray);font-size:.9rem">Vista previa</span>';
+ }
+ }
+
  async function guardarProducto() {
  const id = document.getElementById('prod-id').value;
  const nombre = document.getElementById('prod-nombre').value.trim();
  const precio = document.getElementById('prod-precio').value;
  if (!nombre || !precio) { toast('Nombre y precio son obligatorios','warning'); return; }
+ const file = document.getElementById('prod-imagen-file').files[0];
  const datos = {
  nombre,
  descripcion: document.getElementById('prod-desc').value,
  precio: parseFloat(precio),
  tiempo_estimado:parseInt(document.getElementById('prod-tiempo').value) || 15,
  categoria_id: document.getElementById('prod-categoria').value || null,
- imagen_url: document.getElementById('prod-imagen').value || null,
+ imagen_url: document.getElementById('prod-imagen').value.trim() || null,
  disponible: document.getElementById('prod-disponible').checked
  };
  const btn = document.getElementById('btn-guardar-prod');
  btn.disabled = true; btn.textContent = 'Guardando...';
  try {
+ if (file) {
+ if (file.size > 3 * 1024 * 1024) throw new Error('La imagen no debe pesar mas de 3 MB');
+ btn.textContent = 'Subiendo...';
+ const uploaded = await Uploads.image(file);
+ datos.imagen_url = uploaded.url;
+ btn.textContent = 'Guardando...';
+ }
  if (id) { await Productos.update(id, datos); toast('Producto actualizado','success'); }
  else { await Productos.create(datos); toast('Producto creado','success'); }
  closeProductoModal();
