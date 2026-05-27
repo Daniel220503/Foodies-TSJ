@@ -152,7 +152,7 @@ frontend/landing/
 | Nombre | Rol | GitHub |
 |--------|-----|--------|
 | Alberto Daniel Martinez Romero |  / Full Stack | [za230111456@zapopan.tecmm.edu.mx](https://github.com/Daniel220503) |
-| Antonio Gael Hernandez Razura | Frontend / Diseño UI | [@COMPLETAR](https://github.com/Antoninox216) |
+| Antonio Gael Hernandez Razura | Frontend / Diseño UI | [za230110346@zapopan.tecmm.edu.mx](https://github.com/Antoninox216) |
 | Ruben Salvador Mercado Lucio | Backend / Lógica | [@COMPLETAR](https://github.com/TamlitoVerdeMain)|
 
 
