@@ -14,7 +14,7 @@ Plataforma de pedidos de comida en línea para el Tecnológico Superior de Jalis
 
 
 
-## 🎯 Objetivos
+## Objetivos
 
 **Objetivo General:**
 Desarrollar una plataforma web funcional y atractiva que permita a los usuarios consultar, explorar y gestionar información gastronómica de manera eficiente.
@@ -121,7 +121,7 @@ frontend/landing/
 ```
 
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 | Categoría              | Tecnología / Herramienta             |
 |------------------------|--------------------------------------|
@@ -153,7 +153,7 @@ frontend/landing/
 |--------|-----|--------|
 | Alberto Daniel Martinez Romero | Full Stack | [za230111456@zapopan.tecmm.edu.mx](https://github.com/Daniel220503) |
 | Antonio Gael Hernandez Razura |  Full Stack| [za230110346@zapopan.tecmm.edu.mx](https://github.com/Antoninox216) |
-| Ruben Salvador Mercado Lucio |   Full Stack | [@COMPLETAR](https://github.com/TamlitoVerdeMain)|
+| Ruben Salvador Mercado Lucio |   Full Stack | [za230110877@zapopan.tecmm.edu.mx](https://github.com/TamlitoVerdeMain)|
 
 
 > **Carrera:** Ingeniería en Sistemas Computacionales sexto semestre 
